@@ -18,21 +18,15 @@ public class FleeWhenCloseMixin {
 	@Final
 	private Monster mob;
 
-	@Shadow
-	private int attackTime;
-
-	@Shadow
-	private int seeTime;
-
 	@Unique
 	private static final double FLEE_ENTER_DIST_SQ = 36.0;
 	@Unique
-	private static final double FLEE_EXIT_DIST_SQ = 81.0;
+	private static final double FLEE_EXIT_DIST_SQ = 56.25;
 
 	@Unique
 	private boolean fleeing = false;
 
-	@Inject(method = "tick", at = @At("HEAD"), cancellable = true)
+	@Inject(method = "tick", at = @At("TAIL"))
 	private void fleeWhenTooClose(CallbackInfo ci) {
 		LivingEntity target = this.mob.getTarget();
 		if (target == null) return;
@@ -46,17 +40,9 @@ public class FleeWhenCloseMixin {
 		}
 
 		if (this.fleeing) {
-			if (this.mob.isUsingItem()) {
-				this.mob.stopUsingItem();
-			}
-			this.attackTime = 10;
-			this.seeTime = -60;
-
 			double fleeX = this.mob.getX() + (this.mob.getX() - target.getX());
 			double fleeZ = this.mob.getZ() + (this.mob.getZ() - target.getZ());
 			this.mob.getNavigation().moveTo(fleeX, this.mob.getY(), fleeZ, 1.5);
-
-			ci.cancel();
 		}
 	}
 }
