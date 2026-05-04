@@ -22,9 +22,15 @@ public class FleeWhenCloseMixin {
 	private static final double FLEE_ENTER_DIST_SQ = 36.0;
 	@Unique
 	private static final double FLEE_EXIT_DIST_SQ = 56.25;
+	@Unique
+	private static final double CHASE_ENTER_DIST_SQ = 225.0;
+	@Unique
+	private static final double CHASE_EXIT_DIST_SQ = 196.0;
 
 	@Unique
 	private boolean fleeing = false;
+	@Unique
+	private boolean chasing = false;
 
 	@Inject(method = "tick", at = @At("TAIL"))
 	private void fleeWhenTooClose(CallbackInfo ci) {
@@ -39,10 +45,18 @@ public class FleeWhenCloseMixin {
 			this.fleeing = false;
 		}
 
+		if (!this.chasing && distSq > CHASE_ENTER_DIST_SQ) {
+			this.chasing = true;
+		} else if (this.chasing && distSq < CHASE_EXIT_DIST_SQ) {
+			this.chasing = false;
+		}
+
 		if (this.fleeing) {
 			double fleeX = this.mob.getX() + (this.mob.getX() - target.getX());
 			double fleeZ = this.mob.getZ() + (this.mob.getZ() - target.getZ());
 			this.mob.getNavigation().moveTo(fleeX, this.mob.getY(), fleeZ, 1.5);
+		} else if (this.chasing) {
+			this.mob.getNavigation().moveTo(target, 1.5);
 		}
 	}
 }
