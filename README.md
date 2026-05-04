@@ -14,4 +14,4 @@ For setup instructions, please see the [Fabric Documentation page](https://docs.
 
 ## License
 
-CC0-1.0
+MIT
