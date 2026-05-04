@@ -1,31 +1,31 @@
 {
 	"schemaVersion": 1,
-	"id": "modid",
+	"id": "enhancem",
 	"version": "${version}",
-	"name": "Example Mod",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"name": "EnhanceM",
+	"description": "A mob behavior enhancement mod.",
 	"authors": [
-		"Me!"
+		"jed"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/modid/icon.png",
+	"icon": "assets/enhancem/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.example.ExampleMod"
+			"net.enhancem.EnhanceM"
 		],
 		"client": [
-			"com.example.client.ExampleModClient"
+			"net.enhancem.client.EnhanceMClient"
 		]
 	},
 	"mixins": [
-		"modid.mixins.json",
+		"enhancem.mixins.json",
 		{
-			"config": "modid.client.mixins.json",
+			"config": "enhancem.client.mixins.json",
 			"environment": "client"
 		}
 	],
