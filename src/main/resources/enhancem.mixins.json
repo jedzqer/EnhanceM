@@ -7,7 +7,8 @@
 		"ExperienceMultiplierMixin",
 		"FleeWhenCloseMixin",
 		"SpiderWebMixin",
-		"ZombieSpeedMixin"
+		"ZombieSpeedMixin",
+		"ZombieToolMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
