@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ExperienceMultiplierMixin {
 
 	@Unique
-	private static final double EXPERIENCE_MULTIPLIER = 2.5;
+	private static final double EXPERIENCE_MULTIPLIER = 3.0;
 
 	@Inject(method = "getValue", at = @At("RETURN"), cancellable = true)
 	private void onGetValue(CallbackInfoReturnable<Integer> cir) {
