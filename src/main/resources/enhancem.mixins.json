@@ -3,6 +3,7 @@
 	"package": "net.enhancem.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"mixins": [
+		"AttackRangeMixin",
 		"EnhanceMMixin",
 		"ExperienceMultiplierMixin",
 		"FleeWhenCloseMixin",
