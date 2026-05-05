@@ -6,7 +6,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -41,26 +40,10 @@ public class DeathDropPersistenceMixin {
 	}
 
 	@Inject(
-		method = "spawnAtLocation(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;)Lnet/minecraft/world/entity/item/ItemEntity;",
+		method = "drop(Lnet/minecraft/world/item/ItemStack;ZZ)Lnet/minecraft/world/entity/item/ItemEntity;",
 		at = @At("RETURN")
 	)
-	private void enhancem$keepDeathDrops(ServerLevel level, ItemStack stack, CallbackInfoReturnable<ItemEntity> cir) {
-		this.enhancem$setUnlimitedLifetime(cir);
-	}
-
-	@Inject(
-		method = "spawnAtLocation(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;F)Lnet/minecraft/world/entity/item/ItemEntity;",
-		at = @At("RETURN")
-	)
-	private void enhancem$keepDeathDrops(ServerLevel level, ItemStack stack, float yOffset, CallbackInfoReturnable<ItemEntity> cir) {
-		this.enhancem$setUnlimitedLifetime(cir);
-	}
-
-	@Inject(
-		method = "spawnAtLocation(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/item/ItemStack;Lnet/minecraft/world/phys/Vec3;)Lnet/minecraft/world/entity/item/ItemEntity;",
-		at = @At("RETURN")
-	)
-	private void enhancem$keepDeathDrops(ServerLevel level, ItemStack stack, Vec3 position, CallbackInfoReturnable<ItemEntity> cir) {
+	private void enhancem$keepDeathDrops(ItemStack stack, boolean randomly, boolean thrownFromHand, CallbackInfoReturnable<ItemEntity> cir) {
 		this.enhancem$setUnlimitedLifetime(cir);
 	}
 
