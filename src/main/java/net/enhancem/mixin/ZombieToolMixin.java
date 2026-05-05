@@ -33,7 +33,9 @@ public class ZombieToolMixin {
     private ItemStack getRandomTool(Zombie zombie) {
         int roll = RANDOM.nextInt(100);
 
-        if (roll < 50) {
+        if (roll < 25) {
+            return getRandomCopperTool(zombie);
+        } else if (roll < 50) {
             return getRandomIronTool(zombie);
         } else if (roll < 80) {
             return getRandomGoldTool(zombie);
@@ -42,6 +44,19 @@ public class ZombieToolMixin {
         } else {
             return getRandomNetheriteTool(zombie);
         }
+    }
+
+    @Unique
+    private ItemStack getRandomCopperTool(Zombie zombie) {
+        int toolType = RANDOM.nextInt(5);
+        return switch (toolType) {
+            case 0 -> enchantSword(zombie, new ItemStack(Items.COPPER_SWORD));
+            case 1 -> new ItemStack(Items.COPPER_PICKAXE);
+            case 2 -> new ItemStack(Items.COPPER_AXE);
+            case 3 -> new ItemStack(Items.COPPER_SHOVEL);
+            case 4 -> new ItemStack(Items.COPPER_HOE);
+            default -> enchantSword(zombie, new ItemStack(Items.COPPER_SWORD));
+        };
     }
 
     @Unique
