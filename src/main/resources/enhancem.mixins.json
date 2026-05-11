@@ -9,6 +9,7 @@
 		"ExperienceMultiplierMixin",
 		"FleeWhenCloseMixin",
 		"SpiderWebMixin",
+		"ZombifiedPiglinMeleeAttackMixin",
 		"ZombieShieldAttackGoalMixin",
 		"ZombieShieldMeleeAttackMixin",
 		"ZombieShieldMixin",
