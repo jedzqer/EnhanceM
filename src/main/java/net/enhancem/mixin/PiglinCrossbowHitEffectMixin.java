@@ -22,7 +22,7 @@ public abstract class PiglinCrossbowHitEffectMixin {
     @Unique
     private static final double ENHANCEM_CROSSBOW_KNOCKBACK_STRENGTH = 1.5D;
     @Unique
-    private static final int ENHANCEM_SLOWNESS_DURATION_TICKS = 10;
+    private static final int ENHANCEM_SLOWNESS_DURATION_TICKS = 20;
     @Unique
     private static final int ENHANCEM_SLOWNESS_AMPLIFIER = 0;
 
