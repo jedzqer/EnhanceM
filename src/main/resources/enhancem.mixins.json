@@ -8,6 +8,7 @@
 		"EnhanceMMixin",
 		"ExperienceMultiplierMixin",
 		"FleeWhenCloseMixin",
+		"HorseSpeedMixin",
 		"PiglinBruteHitEffectMixin",
 		"PiglinCrossbowHitEffectMixin",
 		"PiglinWeaponEnchantMixin",
