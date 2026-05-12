@@ -17,24 +17,28 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MeleeAttackGoal.class)
-public class SpiderWebMixin {
+public abstract class SpiderWebMixin {
 
 	@Shadow
 	@Final
 	protected PathfinderMob mob;
 
-	@Shadow
-	private boolean isTimeToAttack() { return false; }
-
 	@Unique
 	private static final double COBWEB_CHANCE = 0.25;
 
-	@Inject(method = "checkAndPerformAttack", at = @At("HEAD"))
+	@Inject(
+		method = "checkAndPerformAttack",
+		at = @At(
+			value = "INVOKE",
+			target = "Lnet/minecraft/world/entity/PathfinderMob;doHurtTarget(Lnet/minecraft/world/entity/Entity;)Z",
+			shift = At.Shift.AFTER
+		)
+	)
 	private void onAttackTarget(LivingEntity target, CallbackInfo ci) {
-		if (!this.isTimeToAttack()) return;
 		if (!(this.mob instanceof Spider)) return;
 		if (!(target instanceof Player player)) return;
-		if (Math.random() >= COBWEB_CHANCE) return;
+		if (this.mob.level().isClientSide()) return;
+		if (this.mob.getRandom().nextDouble() >= COBWEB_CHANCE) return;
 
 		Level level = player.level();
 		BlockPos pos = player.blockPosition();
