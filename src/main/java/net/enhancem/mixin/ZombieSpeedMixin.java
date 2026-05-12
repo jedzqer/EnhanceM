@@ -2,6 +2,7 @@ package net.enhancem.mixin;
 
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.zombie.Drowned;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -18,6 +19,10 @@ public class ZombieSpeedMixin {
 	@Inject(method = "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;)V", at = @At("TAIL"))
 	private void enhancem$modifySpeed(CallbackInfo ci) {
 		Zombie zombie = (Zombie) (Object) this;
+		if (zombie instanceof Drowned) {
+			return;
+		}
+
 		AttributeInstance speedAttr = zombie.getAttribute(Attributes.MOVEMENT_SPEED);
 		if (speedAttr != null) {
 			speedAttr.setBaseValue(ZOMBIE_SPEED);
