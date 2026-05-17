@@ -1,3 +1,7 @@
 {
-  "enchantment.enhancem.divine_blessing": "神佑"
+  "enchantment.enhancem.divine_blessing": "神佑",
+  "item.enhancem.rebirth_pearl": "重生宝珠",
+  "item.enhancem.rebirth_pearl.channeling": "传送中，请勿受击...",
+  "item.enhancem.rebirth_pearl.interrupted": "传送被打断！",
+  "item.enhancem.rebirth_pearl.success": "已传送回家。"
 }

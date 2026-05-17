@@ -1,3 +1,7 @@
 {
-  "enchantment.enhancem.divine_blessing": "Divine Blessing"
+  "enchantment.enhancem.divine_blessing": "Divine Blessing",
+  "item.enhancem.rebirth_pearl": "Rebirth Pearl",
+  "item.enhancem.rebirth_pearl.channeling": "Channeling... do not move!",
+  "item.enhancem.rebirth_pearl.interrupted": "Teleportation interrupted!",
+  "item.enhancem.rebirth_pearl.success": "Teleported home."
 }

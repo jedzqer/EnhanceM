@@ -25,7 +25,8 @@
 		"ZombieShieldMeleeAttackMixin",
 		"ZombieShieldMixin",
 		"ZombieSpeedMixin",
-		"ZombieToolMixin"
+		"ZombieToolMixin",
+		"RebirthPearlDamageMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

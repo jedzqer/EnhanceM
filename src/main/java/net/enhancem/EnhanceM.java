@@ -1,27 +1,42 @@
 package net.enhancem;
 
+import net.enhancem.item.RebirthPearl;
+import net.enhancem.network.RebirthPearlChannelPayload;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
+import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.SetComponentsFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
-import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
+import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
 public class EnhanceM implements ModInitializer {
 	public static final String MOD_ID = "enhancem";
-
 	public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
 
 	private static final ResourceKey<Enchantment> DIVINE_BLESSING_KEY = ResourceKey.create(
@@ -29,10 +44,54 @@ public class EnhanceM implements ModInitializer {
 			Identifier.fromNamespaceAndPath("enhancem", "divine_blessing")
 	);
 
+	public static final Item REBIRTH_PEARL = Registry.register(
+			BuiltInRegistries.ITEM,
+			Identifier.fromNamespaceAndPath(MOD_ID, "rebirth_pearl"),
+			new RebirthPearl(new Item.Properties().stacksTo(16))
+	);
+
 	@Override
 	public void onInitialize() {
 		LOGGER.info("EnhanceM loaded!");
+		PayloadTypeRegistry.clientboundPlay().register(RebirthPearlChannelPayload.TYPE, RebirthPearlChannelPayload.CODEC);
 		registerLootModifiers();
+		registerRebirthPearlTick();
+	}
+
+	private void registerRebirthPearlTick() {
+		ServerTickEvents.END_SERVER_TICK.register(server -> {
+			var toRemove = new ArrayList<UUID>();
+
+			RebirthPearl.CHANNELING.forEach((uuid, startTick) -> {
+				ServerPlayer player = server.getPlayerList().getPlayer(uuid);
+				if (player == null) {
+					toRemove.add(uuid);
+					return;
+				}
+				long elapsed = player.level().getGameTime() - startTick;
+				if (elapsed >= 100) {
+					teleportToSpawn(player, server);
+					toRemove.add(uuid);
+					ServerPlayNetworking.send(player, new RebirthPearlChannelPayload(false));
+					player.sendOverlayMessage(
+							Component.translatable("item.enhancem.rebirth_pearl.success"));
+				}
+			});
+
+			toRemove.forEach(RebirthPearl.CHANNELING::remove);
+		});
+	}
+
+	private static void teleportToSpawn(ServerPlayer player, MinecraftServer server) {
+		ServerLevel overworld = server.overworld();
+		var spawnPos = overworld.getRespawnData().pos();
+		player.teleport(new TeleportTransition(
+				overworld,
+				Vec3.atBottomCenterOf(spawnPos),
+				Vec3.ZERO,
+				player.getYRot(),
+				player.getXRot(),
+				TeleportTransition.DO_NOTHING));
 	}
 
 	private void registerLootModifiers() {

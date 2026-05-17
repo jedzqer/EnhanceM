@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "ACA",
+    "EWA",
+    "ADA"
+  ],
+  "key": {
+    "A": {"item": "minecraft:amethyst_cluster"},
+    "C": {"item": "minecraft:compass"},
+    "E": {"item": "minecraft:ender_pearl"},
+    "W": {"item": "minecraft:warped_stem"},
+    "D": {"item": "minecraft:diamond"}
+  },
+  "result": {
+    "id": "enhancem:rebirth_pearl",
+    "count": 1
+  }
+}
