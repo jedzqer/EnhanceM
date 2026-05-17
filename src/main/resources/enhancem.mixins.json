@@ -8,7 +8,6 @@
 		"DrownedHitEffectMixin",
 		"DrownedSpeedMixin",
 		"EnderDragonHealthMixin",
-		"EndermanDeathBlackHoleMixin",
 		"DeathDropPersistenceMixin",
 		"DownwardMeleeAttackMixin",
 		"EnhanceMMixin",
