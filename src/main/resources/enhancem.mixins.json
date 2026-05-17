@@ -7,6 +7,7 @@
 		"DrownedLandSlownessMixin",
 		"DrownedHitEffectMixin",
 		"DrownedSpeedMixin",
+		"EnderDragonHealthMixin",
 		"EndermanDeathBlackHoleMixin",
 		"DeathDropPersistenceMixin",
 		"DownwardMeleeAttackMixin",
