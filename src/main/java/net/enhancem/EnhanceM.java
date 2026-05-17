@@ -12,6 +12,7 @@ import net.minecraft.core.Registry;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.sounds.SoundEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
@@ -49,6 +50,12 @@ public class EnhanceM implements ModInitializer {
 	private static final ResourceKey<Item> REBIRTH_PEARL_KEY = ResourceKey.create(
 			Registries.ITEM,
 			Identifier.fromNamespaceAndPath(MOD_ID, "rebirth_pearl")
+	);
+
+	public static final SoundEvent DIVINE_BLESSING_SOUND = Registry.register(
+			BuiltInRegistries.SOUND_EVENT,
+			Identifier.fromNamespaceAndPath(MOD_ID, "divine_blessing"),
+			SoundEvent.createVariableRangeEvent(Identifier.fromNamespaceAndPath(MOD_ID, "divine_blessing"))
 	);
 
 	public static final Item REBIRTH_PEARL = Registry.register(

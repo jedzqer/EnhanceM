@@ -1,10 +1,13 @@
 package net.enhancem.mixin;
 
+import net.enhancem.EnhanceM;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -45,17 +48,21 @@ public abstract class DivineBlessingMixin {
         Holder<Enchantment> holder = enchantmentHolder.get();
         if (EnchantmentHelper.getItemEnchantmentLevel(holder, chestplate) <= 0) return;
 
-        enhancem$activateDivineBlessing(player);
+        enhancem$activateDivineBlessing(player, serverLevel);
         cir.setReturnValue(true);
     }
 
     @Unique
-    private static void enhancem$activateDivineBlessing(Player player) {
+    private static void enhancem$activateDivineBlessing(Player player, ServerLevel serverLevel) {
         player.setHealth(1.0F);
         player.removeAllEffects();
         player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, 1));
         player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
         player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
         player.setItemSlot(EquipmentSlot.CHEST, ItemStack.EMPTY);
+
+        double x = player.getX(), y = player.getY(), z = player.getZ();
+        serverLevel.playSound(null, x, y, z, SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 1.0F, 1.0F);
+        serverLevel.playSound(null, x, y, z, EnhanceM.DIVINE_BLESSING_SOUND, SoundSource.PLAYERS, 1.0F, 1.0F);
     }
 }
