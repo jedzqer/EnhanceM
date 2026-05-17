@@ -100,6 +100,8 @@ public class EnhanceM implements ModInitializer {
 				player.getYRot(),
 				player.getXRot(),
 				TeleportTransition.DO_NOTHING));
+		player.removeAllEffects();
+		player.setHealth(player.getMaxHealth());
 	}
 
 	private void registerLootModifiers() {
