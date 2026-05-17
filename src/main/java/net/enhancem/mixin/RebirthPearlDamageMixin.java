@@ -4,6 +4,7 @@ import net.enhancem.item.RebirthPearl;
 import net.enhancem.network.RebirthPearlChannelPayload;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,8 +15,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
 public class RebirthPearlDamageMixin {
-    @Inject(method = "hurt", at = @At("HEAD"))
-    private void enhancem$cancelRebirthOnDamage(DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
+    @Inject(method = "hurtServer", at = @At("HEAD"))
+    private void enhancem$cancelRebirthOnDamage(ServerLevel level, DamageSource source, float amount, CallbackInfoReturnable<Boolean> cir) {
         LivingEntity self = (LivingEntity) (Object) this;
         if (!(self instanceof ServerPlayer serverPlayer)) return;
         if (!RebirthPearl.CHANNELING.containsKey(serverPlayer.getUUID())) return;
