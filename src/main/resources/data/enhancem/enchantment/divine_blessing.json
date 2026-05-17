@@ -2,7 +2,15 @@
   "description": {
     "translate": "enchantment.enhancem.divine_blessing"
   },
-  "supported_items": "#minecraft:chest_armor",
+  "supported_items": [
+    "minecraft:leather_chestplate",
+    "minecraft:chainmail_chestplate",
+    "minecraft:iron_chestplate",
+    "minecraft:golden_chestplate",
+    "minecraft:diamond_chestplate",
+    "minecraft:netherite_chestplate"
+  ],
+  "primary_items": [],
   "weight": 1,
   "max_level": 1,
   "min_cost": {

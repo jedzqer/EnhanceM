@@ -13,7 +13,9 @@ import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.SetComponentsFunction;
+import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.UniformGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,8 +36,15 @@ public class EnhanceM implements ModInitializer {
 	}
 
 	private void registerLootModifiers() {
+		var bastionTables = java.util.List.of(
+				BuiltInLootTables.BASTION_TREASURE,
+				BuiltInLootTables.BASTION_OTHER,
+				BuiltInLootTables.BASTION_BRIDGE,
+				BuiltInLootTables.BASTION_HOGLIN_STABLE
+		);
+
 		LootTableEvents.MODIFY.register((key, tableBuilder, source, registries) -> {
-			if (!BuiltInLootTables.BASTION_TREASURE.equals(key)) return;
+			if (bastionTables.stream().noneMatch(k -> k.equals(key))) return;
 
 			registries.lookupOrThrow(Registries.ENCHANTMENT).get(DIVINE_BLESSING_KEY).ifPresent(enchantmentHolder -> {
 				var mutable = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
@@ -47,7 +56,8 @@ public class EnhanceM implements ModInitializer {
 								.add(LootItem.lootTableItem(Items.ENCHANTED_BOOK)
 										.apply(SetComponentsFunction.setComponent(
 												DataComponents.STORED_ENCHANTMENTS,
-												mutable.toImmutable())))
+												mutable.toImmutable()))
+										.when(LootItemRandomChanceCondition.randomChance(0.15f)))
 				);
 			});
 		});
