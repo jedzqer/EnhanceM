@@ -24,6 +24,8 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.ItemEnchantments;
+import net.minecraft.world.item.equipment.ArmorMaterials;
+import net.minecraft.world.item.equipment.ArmorType;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootPool;
@@ -52,6 +54,11 @@ public class EnhanceM implements ModInitializer {
 			Identifier.fromNamespaceAndPath(MOD_ID, "rebirth_pearl")
 	);
 
+	private static final ResourceKey<Item> SPEED_BOOTS_KEY = ResourceKey.create(
+			Registries.ITEM,
+			Identifier.fromNamespaceAndPath(MOD_ID, "speed_boots")
+	);
+
 	public static final SoundEvent DIVINE_BLESSING_SOUND = Registry.register(
 			BuiltInRegistries.SOUND_EVENT,
 			Identifier.fromNamespaceAndPath(MOD_ID, "divine_blessing"),
@@ -64,11 +71,18 @@ public class EnhanceM implements ModInitializer {
 			new RebirthPearl(new Item.Properties().setId(REBIRTH_PEARL_KEY).stacksTo(16))
 	);
 
+	public static final Item SPEED_BOOTS = Registry.register(
+			BuiltInRegistries.ITEM,
+			SPEED_BOOTS_KEY,
+			new Item(new Item.Properties().setId(SPEED_BOOTS_KEY).humanoidArmor(ArmorMaterials.LEATHER, ArmorType.BOOTS))
+	);
+
 	@Override
 	public void onInitialize() {
 		LOGGER.info("EnhanceM loaded!");
 		PayloadTypeRegistry.clientboundPlay().register(RebirthPearlChannelPayload.TYPE, RebirthPearlChannelPayload.CODEC);
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> output.accept(REBIRTH_PEARL));
+		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.COMBAT).register(output -> output.accept(SPEED_BOOTS));
 		registerLootModifiers();
 		registerRebirthPearlTick();
 	}
@@ -136,6 +150,17 @@ public class EnhanceM implements ModInitializer {
 										.when(LootItemRandomChanceCondition.randomChance(0.15f)))
 				);
 			});
+		});
+
+		LootTableEvents.MODIFY.register((key, tableBuilder, source, registries) -> {
+			if (!BuiltInLootTables.NETHER_BRIDGE.equals(key)) return;
+
+			tableBuilder.withPool(
+					LootPool.lootPool()
+							.setRolls(ConstantValue.exactly(1))
+							.add(LootItem.lootTableItem(SPEED_BOOTS)
+									.when(LootItemRandomChanceCondition.randomChance(0.2f)))
+			);
 		});
 	}
 }

@@ -26,7 +26,8 @@
 		"ZombieShieldMixin",
 		"ZombieSpeedMixin",
 		"ZombieToolMixin",
-		"RebirthPearlDamageMixin"
+		"RebirthPearlDamageMixin",
+		"SpeedBootsPlayerMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
