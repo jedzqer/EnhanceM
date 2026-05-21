@@ -3,12 +3,31 @@
     "translate": "enchantment.enhancem.divine_blessing"
   },
   "supported_items": [
+    "minecraft:leather_helmet",
+    "minecraft:chainmail_helmet",
+    "minecraft:iron_helmet",
+    "minecraft:golden_helmet",
+    "minecraft:diamond_helmet",
+    "minecraft:netherite_helmet",
     "minecraft:leather_chestplate",
     "minecraft:chainmail_chestplate",
     "minecraft:iron_chestplate",
     "minecraft:golden_chestplate",
     "minecraft:diamond_chestplate",
-    "minecraft:netherite_chestplate"
+    "minecraft:netherite_chestplate",
+    "minecraft:leather_leggings",
+    "minecraft:chainmail_leggings",
+    "minecraft:iron_leggings",
+    "minecraft:golden_leggings",
+    "minecraft:diamond_leggings",
+    "minecraft:netherite_leggings",
+    "minecraft:leather_boots",
+    "minecraft:chainmail_boots",
+    "minecraft:iron_boots",
+    "minecraft:golden_boots",
+    "minecraft:diamond_boots",
+    "minecraft:netherite_boots",
+    "enhancem:speed_boots"
   ],
   "primary_items": [],
   "weight": 1,
@@ -23,7 +42,10 @@
   },
   "anvil_cost": 8,
   "slots": [
-    "chest"
+    "head",
+    "chest",
+    "legs",
+    "feet"
   ],
   "effects": {}
 }

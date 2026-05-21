@@ -38,28 +38,37 @@ public abstract class DivineBlessingMixin {
         if (!((Object) this instanceof Player player)) return;
         if (!(player.level() instanceof ServerLevel serverLevel)) return;
 
-        ItemStack chestplate = player.getItemBySlot(EquipmentSlot.CHEST);
-        if (chestplate.isEmpty()) return;
-
         var enchantmentRegistry = serverLevel.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
         var enchantmentHolder = enchantmentRegistry.get(DIVINE_BLESSING_KEY);
         if (enchantmentHolder.isEmpty()) return;
 
         Holder<Enchantment> holder = enchantmentHolder.get();
-        if (EnchantmentHelper.getItemEnchantmentLevel(holder, chestplate) <= 0) return;
+        EquipmentSlot blessedSlot = enhancem$findBlessedArmorSlot(player, holder);
+        if (blessedSlot == null) return;
 
-        enhancem$activateDivineBlessing(player, serverLevel);
+        enhancem$activateDivineBlessing(player, serverLevel, blessedSlot);
         cir.setReturnValue(true);
     }
 
     @Unique
-    private static void enhancem$activateDivineBlessing(Player player, ServerLevel serverLevel) {
+    private static EquipmentSlot enhancem$findBlessedArmorSlot(Player player, Holder<Enchantment> holder) {
+        for (EquipmentSlot slot : new EquipmentSlot[]{EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET}) {
+            ItemStack stack = player.getItemBySlot(slot);
+            if (!stack.isEmpty() && EnchantmentHelper.getItemEnchantmentLevel(holder, stack) > 0) {
+                return slot;
+            }
+        }
+        return null;
+    }
+
+    @Unique
+    private static void enhancem$activateDivineBlessing(Player player, ServerLevel serverLevel, EquipmentSlot blessedSlot) {
         player.setHealth(1.0F);
         player.removeAllEffects();
         player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, 1));
         player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
         player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
-        player.setItemSlot(EquipmentSlot.CHEST, ItemStack.EMPTY);
+        player.setItemSlot(blessedSlot, ItemStack.EMPTY);
 
         double x = player.getX(), y = player.getY(), z = player.getZ();
         serverLevel.playSound(null, x, y, z, SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 1.0F, 1.0F);
