@@ -1,11 +1,12 @@
 package net.enhancem.mixin;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.particles.PowerParticleOption;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.AreaEffectCloud;
-import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.monster.EnderMan;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
@@ -20,17 +21,29 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.List;
 
 @Mixin(AreaEffectCloud.class)
-public class EnderBreathCloudMixin {
+public class EnderBreathCloudMixin implements EnhancemEnderBreathMarker {
 
 	@Unique
 	private static final double ENHANCEM_VERTICAL_RANDOM_RANGE = 8.0D;
 	@Unique
 	private static final int ENHANCEM_ENDERMAN_AGGRO_RADIUS = 24;
+	@Unique
+	private boolean enhancem$customEnderBreath;
+
+	@Override
+	public boolean enhancem$isCustomEnderBreath() {
+		return this.enhancem$customEnderBreath;
+	}
+
+	@Override
+	public void enhancem$setCustomEnderBreath(boolean customEnderBreath) {
+		this.enhancem$customEnderBreath = customEnderBreath;
+	}
 
 	@Inject(method = "tick", at = @At("TAIL"))
 	private void enhancem$applyEnderBreathEffects(CallbackInfo ci) {
 		AreaEffectCloud cloud = (AreaEffectCloud) (Object) this;
-		if (!(cloud.getOwner() instanceof EnderDragon)) {
+		if (!this.enhancem$customEnderBreath) {
 			return;
 		}
 		if (!(cloud.level() instanceof ServerLevel serverLevel)) {
@@ -99,19 +112,20 @@ public class EnderBreathCloudMixin {
 	@Unique
 	private void enhancem$spawnSphereParticles(ServerLevel level, Vec3 center, double radius) {
 		AreaEffectCloud cloud = (AreaEffectCloud) (Object) this;
-		for (int i = 0; i < 18; i++) {
+		for (int i = 0; i < 36; i++) {
 			Vec3 offset = new Vec3(
 					cloud.getRandom().nextDouble() * 2.0D - 1.0D,
 					cloud.getRandom().nextDouble() * 2.0D - 1.0D,
 					cloud.getRandom().nextDouble() * 2.0D - 1.0D
 			);
-			if (offset.lengthSqr() > 1.0D || offset.lengthSqr() < 0.01D) {
+			double lengthSqr = offset.lengthSqr();
+			if (lengthSqr > 1.0D || lengthSqr < 0.01D) {
 				continue;
 			}
 
 			Vec3 particlePos = center.add(offset.normalize().scale(cloud.getRandom().nextDouble() * radius));
 			level.sendParticles(
-					cloud.getParticle(),
+					PowerParticleOption.create(ParticleTypes.DRAGON_BREATH, 1.0F),
 					particlePos.x,
 					particlePos.y,
 					particlePos.z,
@@ -119,7 +133,7 @@ public class EnderBreathCloudMixin {
 					0.0D,
 					0.0D,
 					0.0D,
-					0.0D
+					0.01D
 			);
 		}
 	}

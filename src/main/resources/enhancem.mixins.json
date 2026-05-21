@@ -9,6 +9,7 @@
 		"DrownedHitEffectMixin",
 		"DrownedSpeedMixin",
 		"EnderBreathCloudMixin",
+		"EnderBreathProjectileMixin",
 		"EnderDragonBreathAttackMixin",
 		"EnderDragonHealthMixin",
 		"DeathDropPersistenceMixin",

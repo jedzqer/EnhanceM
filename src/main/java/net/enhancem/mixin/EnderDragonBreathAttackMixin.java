@@ -3,9 +3,9 @@ package net.enhancem.mixin;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.hurtingprojectile.DragonFireball;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
@@ -22,7 +22,7 @@ public class EnderDragonBreathAttackMixin {
 	@Unique
 	private static final int ENHANCEM_BREATH_COOLDOWN_MAX = 220;
 	@Unique
-	private static final float ENHANCEM_BREATH_RADIUS = 4.0F;
+	private static final double ENHANCEM_BREATH_TARGET_HEIGHT_OFFSET = 0.5D;
 
 	@Unique
 	private int enhancem$breathCooldown;
@@ -32,7 +32,7 @@ public class EnderDragonBreathAttackMixin {
 		this.enhancem$breathCooldown = ENHANCEM_BREATH_COOLDOWN_MIN;
 	}
 
-	@Inject(method = "tick", at = @At("TAIL"))
+	@Inject(method = "aiStep", at = @At("TAIL"))
 	private void enhancem$spawnEnderBreath(CallbackInfo ci) {
 		EnderDragon dragon = (EnderDragon) (Object) this;
 		if (!(dragon.level() instanceof ServerLevel serverLevel)) {
@@ -52,17 +52,17 @@ public class EnderDragonBreathAttackMixin {
 			return;
 		}
 
-		Vec3 forward = dragon.getViewVector(1.0F).normalize();
-		Vec3 targetPos = player.position().add(0.0D, 0.25D, 0.0D);
-		Vec3 spawnPos = targetPos.subtract(forward.scale(1.5D));
+		Vec3 mouthPos = new Vec3(dragon.head.getX(), dragon.head.getY(0.5D), dragon.head.getZ());
+		Vec3 targetPos = player.position().add(0.0D, ENHANCEM_BREATH_TARGET_HEIGHT_OFFSET, 0.0D);
+		Vec3 direction = targetPos.subtract(mouthPos);
+		if (direction.lengthSqr() < 1.0E-6D) {
+			return;
+		}
 
-		AreaEffectCloud cloud = new AreaEffectCloud(serverLevel, spawnPos.x, spawnPos.y, spawnPos.z);
-		cloud.setOwner(dragon);
-		cloud.setRadius(ENHANCEM_BREATH_RADIUS);
-		cloud.setDuration(100);
-		cloud.setWaitTime(0);
-		cloud.setRadiusPerTick(0.0F);
-		serverLevel.addFreshEntity(cloud);
+		DragonFireball fireball = new DragonFireball(serverLevel, dragon, direction);
+		((EnhancemEnderBreathMarker) fireball).enhancem$setCustomEnderBreath(true);
+		fireball.setPos(mouthPos.x, mouthPos.y, mouthPos.z);
+		serverLevel.addFreshEntity(fireball);
 
 		this.enhancem$breathCooldown = ENHANCEM_BREATH_COOLDOWN_MIN + dragon.getRandom().nextInt(ENHANCEM_BREATH_COOLDOWN_MAX - ENHANCEM_BREATH_COOLDOWN_MIN + 1);
 	}
