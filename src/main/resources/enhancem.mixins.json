@@ -8,6 +8,8 @@
 		"DrownedLandSlownessMixin",
 		"DrownedHitEffectMixin",
 		"DrownedSpeedMixin",
+		"EnderBreathCloudMixin",
+		"EnderDragonBreathAttackMixin",
 		"EnderDragonHealthMixin",
 		"DeathDropPersistenceMixin",
 		"DownwardMeleeAttackMixin",
