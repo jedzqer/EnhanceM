@@ -146,7 +146,8 @@ public class EnhanceM implements ModInitializer {
 				BuiltInLootTables.BASTION_TREASURE,
 				BuiltInLootTables.BASTION_OTHER,
 				BuiltInLootTables.BASTION_BRIDGE,
-				BuiltInLootTables.BASTION_HOGLIN_STABLE
+				BuiltInLootTables.BASTION_HOGLIN_STABLE,
+				BuiltInLootTables.NETHER_BRIDGE
 		);
 
 		LootTableEvents.MODIFY.register((key, tableBuilder, source, registries) -> {
