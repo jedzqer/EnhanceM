@@ -1,5 +1,6 @@
 package net.enhancem.mixin;
 
+import net.enhancem.access.EnhancemEnderBreathMarker;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.AreaEffectCloud;

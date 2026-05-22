@@ -1,5 +1,6 @@
 package net.enhancem.mixin;
 
+import net.enhancem.access.EnhancemEnderBreathMarker;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.PowerParticleOption;
 import net.minecraft.core.particles.ParticleTypes;

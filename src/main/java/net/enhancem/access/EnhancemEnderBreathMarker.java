@@ -1,4 +1,4 @@
-package net.enhancem.mixin;
+package net.enhancem.access;
 
 public interface EnhancemEnderBreathMarker {
 
