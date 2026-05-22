@@ -1,8 +1,10 @@
 package net.enhancem;
 
+import net.enhancem.entity.EnderSoldierEntity;
 import net.enhancem.item.RebirthPearl;
 import net.enhancem.network.RebirthPearlChannelPayload;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.fabricmc.fabric.api.creativetab.v1.CreativeModeTabEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.loot.v3.LootTableEvents;
@@ -19,6 +21,8 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -77,9 +81,21 @@ public class EnhanceM implements ModInitializer {
 			new Item(new Item.Properties().setId(SPEED_BOOTS_KEY).humanoidArmor(ArmorMaterials.LEATHER, ArmorType.BOOTS))
 	);
 
+	public static final EntityType<EnderSoldierEntity> ENDER_SOLDIER = Registry.register(
+			BuiltInRegistries.ENTITY_TYPE,
+			Identifier.fromNamespaceAndPath(MOD_ID, "ender_soldier"),
+			EntityType.Builder.of(EnderSoldierEntity::new, MobCategory.MONSTER)
+					.sized(0.6F, 1.95F)
+					.eyeHeight(1.74F)
+					.passengerAttachments(2.0125F)
+					.ridingOffset(-0.7F)
+					.build(ResourceKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath(MOD_ID, "ender_soldier")))
+	);
+
 	@Override
 	public void onInitialize() {
 		LOGGER.info("EnhanceM loaded!");
+		FabricDefaultAttributeRegistry.register(ENDER_SOLDIER, EnderSoldierEntity.createAttributes());
 		PayloadTypeRegistry.clientboundPlay().register(RebirthPearlChannelPayload.TYPE, RebirthPearlChannelPayload.CODEC);
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(output -> output.accept(REBIRTH_PEARL));
 		CreativeModeTabEvents.modifyOutputEvent(CreativeModeTabs.COMBAT).register(output -> output.accept(SPEED_BOOTS));
