@@ -10,6 +10,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.storage.ValueInput;
+import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
@@ -29,9 +31,9 @@ public class EnderDragonHealthMixin {
 	@Unique
 	private static final int ENHANCEM_SUMMON_THRESHOLDS = 5;
 	@Unique
-	private static final int ENHANCEM_SUMMON_COUNT = 3;
-	@Unique
 	private static final double ENHANCEM_SUMMON_RADIUS = 18.0D;
+	@Unique
+	private static final String ENHANCEM_NEXT_SUMMON_THRESHOLD_TAG = "EnhanceMNextSummonThresholdIndex";
 
 	@Unique
 	private int enhancem$nextSummonThresholdIndex = 1;
@@ -44,6 +46,20 @@ public class EnderDragonHealthMixin {
 			healthAttr.setBaseValue(healthAttr.getBaseValue() * ENHANCEM_HEALTH_MULTIPLIER);
 			dragon.setHealth(dragon.getMaxHealth());
 		}
+	}
+
+	@Inject(method = "addAdditionalSaveData", at = @At("TAIL"))
+	private void enhancem$saveSummonProgress(ValueOutput output, CallbackInfo ci) {
+		output.putInt(ENHANCEM_NEXT_SUMMON_THRESHOLD_TAG, this.enhancem$nextSummonThresholdIndex);
+	}
+
+	@Inject(method = "readAdditionalSaveData", at = @At("TAIL"))
+	private void enhancem$loadSummonProgress(ValueInput input, CallbackInfo ci) {
+		this.enhancem$nextSummonThresholdIndex = Math.clamp(
+				input.getIntOr(ENHANCEM_NEXT_SUMMON_THRESHOLD_TAG, 1),
+				1,
+				ENHANCEM_SUMMON_THRESHOLDS + 1
+		);
 	}
 
 	@Inject(method = "hurtServer", at = @At("TAIL"))
@@ -59,16 +75,17 @@ public class EnderDragonHealthMixin {
 				break;
 			}
 
-			this.enhancem$spawnEnderSoldiers(serverLevel, dragon);
+			this.enhancem$spawnEnderSoldiers(serverLevel, dragon, this.enhancem$nextSummonThresholdIndex);
 			this.enhancem$nextSummonThresholdIndex++;
 		}
 	}
 
 	@Unique
-	private void enhancem$spawnEnderSoldiers(ServerLevel serverLevel, EnderDragon dragon) {
+	private void enhancem$spawnEnderSoldiers(ServerLevel serverLevel, EnderDragon dragon, int summonStage) {
+		int summonCount = Math.min(summonStage, 4);
 		Player initialTarget = this.enhancem$findNearestPlayer(serverLevel, dragon.position());
-		for (int i = 0; i < ENHANCEM_SUMMON_COUNT; i++) {
-			BlockPos spawnPos = this.enhancem$findSpawnPos(serverLevel, dragon, i);
+		for (int i = 0; i < summonCount; i++) {
+			BlockPos spawnPos = this.enhancem$findSpawnPos(serverLevel, dragon, i, summonCount);
 			if (spawnPos == null) {
 				continue;
 			}
@@ -91,8 +108,8 @@ public class EnderDragonHealthMixin {
 	}
 
 	@Unique
-	private BlockPos enhancem$findSpawnPos(ServerLevel serverLevel, EnderDragon dragon, int index) {
-		double angle = (Math.PI * 2.0D / ENHANCEM_SUMMON_COUNT) * index + dragon.getRandom().nextDouble() * 0.7D;
+	private BlockPos enhancem$findSpawnPos(ServerLevel serverLevel, EnderDragon dragon, int index, int summonCount) {
+		double angle = (Math.PI * 2.0D / summonCount) * index + dragon.getRandom().nextDouble() * 0.7D;
 		double radius = 6.0D + dragon.getRandom().nextDouble() * 6.0D;
 		BlockPos center = BlockPos.containing(
 				dragon.getX() + Math.cos(angle) * radius,
