@@ -25,7 +25,7 @@ import java.util.List;
 public class EnderDragonHealthMixin {
 
 	@Unique
-	private static final double ENHANCEM_HEALTH_MULTIPLIER = 2.0D;
+	private static final double ENHANCEM_HEALTH_MULTIPLIER = 3.0D;
 	@Unique
 	private static final int ENHANCEM_SUMMON_THRESHOLDS = 5;
 	@Unique
@@ -37,7 +37,7 @@ public class EnderDragonHealthMixin {
 	private int enhancem$nextSummonThresholdIndex = 1;
 
 	@Inject(method = "<init>", at = @At("TAIL"))
-	private void enhancem$doubleEnderDragonHealth(EntityType<?> entityType, Level level, CallbackInfo ci) {
+	private void enhancem$tripleEnderDragonHealth(EntityType<?> entityType, Level level, CallbackInfo ci) {
 		EnderDragon dragon = (EnderDragon) (Object) this;
 		AttributeInstance healthAttr = dragon.getAttribute(Attributes.MAX_HEALTH);
 		if (healthAttr != null) {
