@@ -46,8 +46,9 @@ public abstract class DivineBlessingMixin {
         EquipmentSlot blessedSlot = enhancem$findBlessedArmorSlot(player, holder);
         if (blessedSlot == null) return;
 
-        enhancem$activateDivineBlessing(player, serverLevel, blessedSlot);
-        cir.setReturnValue(true);
+        if (enhancem$activateDivineBlessing(player, serverLevel, blessedSlot)) {
+            cir.setReturnValue(true);
+        }
     }
 
     @Unique
@@ -62,16 +63,31 @@ public abstract class DivineBlessingMixin {
     }
 
     @Unique
-    private static void enhancem$activateDivineBlessing(Player player, ServerLevel serverLevel, EquipmentSlot blessedSlot) {
+    private static boolean enhancem$activateDivineBlessing(Player player, ServerLevel serverLevel, EquipmentSlot blessedSlot) {
+        ItemStack blessedStack = player.getItemBySlot(blessedSlot);
+        if (!blessedStack.isEmpty() && blessedStack.isDamageableItem()) {
+            int maxDamage = blessedStack.getMaxDamage();
+            int remainingDurability = maxDamage - blessedStack.getDamageValue();
+
+            if ((long) remainingDurability * 100L <= (long) maxDamage * 5L) {
+                player.setItemSlot(blessedSlot, ItemStack.EMPTY);
+                serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 1.0F, 1.0F);
+                return false;
+            }
+
+            int targetDamage = maxDamage - (int) Math.ceil(maxDamage * 0.05D);
+            blessedStack.setDamageValue(targetDamage);
+            player.setItemSlot(blessedSlot, blessedStack);
+        }
+
         player.setHealth(1.0F);
         player.removeAllEffects();
         player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, 1));
         player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
         player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
-        player.setItemSlot(blessedSlot, ItemStack.EMPTY);
 
         double x = player.getX(), y = player.getY(), z = player.getZ();
-        serverLevel.playSound(null, x, y, z, SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 1.0F, 1.0F);
         serverLevel.playSound(null, x, y, z, EnhanceM.DIVINE_BLESSING_SOUND, SoundSource.PLAYERS, 1.0F, 1.0F);
+        return true;
     }
 }
