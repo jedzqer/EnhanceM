@@ -100,15 +100,17 @@ public class EnderSoldierEntity extends Zombie {
             this.setTarget(player);
         }
 
-        boolean teleported = this.enhancem$tryTeleportAwayFrom(attacker instanceof LivingEntity living ? living : null, serverLevel);
-        if (!teleported) {
-            teleported = this.enhancem$tryRandomTeleport(serverLevel);
-        }
-        if (teleported) {
+        boolean hurt = super.hurtServer(serverLevel, damageSource, amount);
+        if (!hurt) {
             return false;
         }
 
-        return super.hurtServer(serverLevel, damageSource, amount);
+        boolean teleported = this.enhancem$tryTeleportAwayFrom(attacker instanceof LivingEntity living ? living : null, serverLevel);
+        if (!teleported) {
+            this.enhancem$tryRandomTeleport(serverLevel);
+        }
+
+        return true;
     }
 
     @Override
