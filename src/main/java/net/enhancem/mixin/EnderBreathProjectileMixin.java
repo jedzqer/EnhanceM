@@ -1,20 +1,19 @@
 package net.enhancem.mixin;
 
 import net.enhancem.access.EnhancemEnderBreathMarker;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.AreaEffectCloud;
-import net.minecraft.world.entity.AreaEffectCloud;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.projectile.hurtingprojectile.DragonFireball;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.HitResult;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
-import java.util.Comparator;
-import java.util.List;
 
 @Mixin(DragonFireball.class)
 public class EnderBreathProjectileMixin implements EnhancemEnderBreathMarker {
@@ -22,7 +21,7 @@ public class EnderBreathProjectileMixin implements EnhancemEnderBreathMarker {
 	@Unique
 	private static final double ENHANCEM_ENDER_BREATH_RADIUS = 1.75D;
 	@Unique
-	private static final double ENHANCEM_CLOUD_SEARCH_RADIUS = 4.0D;
+	private static final double ENHANCEM_ENDER_BREATH_CHANCE = 0.5D;
 	@Unique
 	private boolean enhancem$customEnderBreath;
 
@@ -36,30 +35,28 @@ public class EnderBreathProjectileMixin implements EnhancemEnderBreathMarker {
 		this.enhancem$customEnderBreath = customEnderBreath;
 	}
 
-	@Inject(method = "onHit", at = @At("TAIL"))
-	private void enhancem$markCustomBreathCloud(HitResult hitResult, CallbackInfo ci) {
-		DragonFireball fireball = (DragonFireball) (Object) this;
-		if (!this.enhancem$customEnderBreath) {
+	@Inject(method = "<init>(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/entity/LivingEntity;Lnet/minecraft/world/phys/Vec3;)V", at = @At("TAIL"))
+	private void enhancem$markVanillaDragonBreath(Level level, LivingEntity owner, Vec3 direction, CallbackInfo ci) {
+		if (!(owner instanceof EnderDragon dragon)) {
 			return;
 		}
-		if (!(fireball.level() instanceof ServerLevel serverLevel)) {
-			return;
-		}
+		this.enhancem$customEnderBreath = dragon.getRandom().nextDouble() < ENHANCEM_ENDER_BREATH_CHANCE;
+	}
 
-		AABB bounds = new AABB(hitResult.getLocation(), hitResult.getLocation()).inflate(ENHANCEM_CLOUD_SEARCH_RADIUS);
-		List<AreaEffectCloud> clouds = serverLevel.getEntitiesOfClass(
-				AreaEffectCloud.class,
-				bounds,
-				cloud -> cloud.getOwner() == fireball.getOwner() && !((EnhancemEnderBreathMarker) cloud).enhancem$isCustomEnderBreath()
-		);
-		AreaEffectCloud cloud = clouds.stream()
-				.min(Comparator.comparingDouble(candidate -> candidate.position().distanceToSqr(hitResult.getLocation())))
-				.orElse(null);
-		if (cloud == null) {
-			return;
+	@ModifyArg(
+			method = "onHit",
+			at = @At(
+					value = "INVOKE",
+					target = "Lnet/minecraft/world/level/Level;addFreshEntity(Lnet/minecraft/world/entity/Entity;)Z"
+			)
+	)
+	private Entity enhancem$replaceVanillaBreathCloud(Entity entity) {
+		if (!this.enhancem$customEnderBreath || !(entity instanceof AreaEffectCloud cloud)) {
+			return entity;
 		}
 
 		((EnhancemEnderBreathMarker) cloud).enhancem$setCustomEnderBreath(true);
 		cloud.setRadius((float) ENHANCEM_ENDER_BREATH_RADIUS);
+		return entity;
 	}
 }

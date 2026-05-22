@@ -10,7 +10,6 @@
 		"DrownedSpeedMixin",
 		"EnderBreathCloudMixin",
 		"EnderBreathProjectileMixin",
-		"EnderDragonBreathAttackMixin",
 		"EnderDragonHealthMixin",
 		"DeathDropPersistenceMixin",
 		"DownwardMeleeAttackMixin",
