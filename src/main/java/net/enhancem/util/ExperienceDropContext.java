@@ -1,4 +1,4 @@
-package net.enhancem.mixin;
+package net.enhancem.util;
 
 public final class ExperienceDropContext {
 
