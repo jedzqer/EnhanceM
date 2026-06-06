@@ -21,6 +21,7 @@
 		"PiglinBruteHitEffectMixin",
 		"PiglinCrossbowHitEffectMixin",
 		"PiglinWeaponEnchantMixin",
+		"PlayerDeathExperienceMixin",
 		"SpiderWebMixin",
 		"ZombifiedPiglinMeleeAttackMixin",
 		"ZombifiedPiglinWeaponEnchantMixin",
