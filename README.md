@@ -7,7 +7,7 @@
 - Minecraft：26.1.2
 - Fabric Loader：0.19.2
 - Fabric API：0.147.0+26.1.2
-- Mod 版本：1.0.1
+- Mod 版本：1.0.2
 
 ## 功能特性
 
