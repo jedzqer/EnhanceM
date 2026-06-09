@@ -29,6 +29,7 @@
 		"ZombieAxeMeleeAttackMixin",
 		"ZombieShieldMeleeAttackMixin",
 		"ZombieShieldMixin",
+		"ZombieSwordStateMixin",
 		"ZombieSwordMeleeAttackMixin",
 		"ZombieSpeedMixin",
 		"ZombieToolMixin",

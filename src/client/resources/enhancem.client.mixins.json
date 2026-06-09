@@ -3,7 +3,10 @@
 	"package": "net.enhancem.client.mixin",
 	"compatibilityLevel": "JAVA_25",
 	"client": [
-		"EnhanceMClientMixin"
+		"EnhanceMClientMixin",
+		"ZombieRenderStateMixin",
+		"AbstractZombieRendererMixin",
+		"AbstractZombieModelMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1
