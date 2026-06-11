@@ -91,7 +91,6 @@ public abstract class SpeedBootsPlayerMixin {
 	@Unique
 	private static boolean enhancem$isLandSprinting(Player player) {
 		return player.isSprinting()
-				&& player.onGround()
 				&& !player.isPassenger()
 				&& !player.isInLiquid()
 				&& !player.isSwimming()
