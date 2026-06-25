@@ -43,11 +43,15 @@ public abstract class DivineBlessingMixin {
         if (enchantmentHolder.isEmpty()) return;
 
         Holder<Enchantment> holder = enchantmentHolder.get();
-        EquipmentSlot blessedSlot = enhancem$findBlessedArmorSlot(player, holder);
-        if (blessedSlot == null) return;
 
-        if (enhancem$activateDivineBlessing(player, serverLevel, blessedSlot)) {
-            cir.setReturnValue(true);
+        while (true) {
+            EquipmentSlot blessedSlot = enhancem$findBlessedArmorSlot(player, holder);
+            if (blessedSlot == null) return;
+
+            if (enhancem$activateDivineBlessing(player, serverLevel, blessedSlot)) {
+                cir.setReturnValue(true);
+                return;
+            }
         }
     }
 
@@ -86,7 +90,6 @@ public abstract class DivineBlessingMixin {
         player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, 1));
         player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
         player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
-        serverLevel.broadcastEntityEvent(player, (byte) 35);
 
         double x = player.getX(), y = player.getY(), z = player.getZ();
         serverLevel.playSound(null, x, y, z, EnhanceM.DIVINE_BLESSING_SOUND, SoundSource.PLAYERS, 1.0F, 1.0F);
