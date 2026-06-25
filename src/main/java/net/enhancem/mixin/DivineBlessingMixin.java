@@ -68,16 +68,17 @@ public abstract class DivineBlessingMixin {
         if (!blessedStack.isEmpty() && blessedStack.isDamageableItem()) {
             int maxDamage = blessedStack.getMaxDamage();
             int remainingDurability = maxDamage - blessedStack.getDamageValue();
+            int reservedDurability = Math.max(1, (int) Math.ceil(maxDamage * 0.05D));
 
-            if ((long) remainingDurability * 100L <= (long) maxDamage * 5L) {
+            if (remainingDurability <= reservedDurability) {
+                player.onEquippedItemBroken(blessedStack.getItem(), blessedSlot);
                 player.setItemSlot(blessedSlot, ItemStack.EMPTY);
-                serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.ITEM_BREAK, SoundSource.PLAYERS, 1.0F, 1.0F);
                 return false;
             }
 
-            int targetDamage = maxDamage - (int) Math.ceil(maxDamage * 0.05D);
-            blessedStack.setDamageValue(targetDamage);
-            player.setItemSlot(blessedSlot, blessedStack);
+            ItemStack protectedStack = blessedStack.copy();
+            protectedStack.setDamageValue(maxDamage - reservedDurability);
+            player.setItemSlot(blessedSlot, protectedStack);
         }
 
         player.setHealth(1.0F);
@@ -85,6 +86,7 @@ public abstract class DivineBlessingMixin {
         player.addEffect(new MobEffectInstance(MobEffects.REGENERATION, 900, 1));
         player.addEffect(new MobEffectInstance(MobEffects.ABSORPTION, 100, 1));
         player.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 800, 0));
+        serverLevel.broadcastEntityEvent(player, (byte) 35);
 
         double x = player.getX(), y = player.getY(), z = player.getZ();
         serverLevel.playSound(null, x, y, z, EnhanceM.DIVINE_BLESSING_SOUND, SoundSource.PLAYERS, 1.0F, 1.0F);
