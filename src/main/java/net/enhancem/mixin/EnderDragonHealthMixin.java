@@ -3,6 +3,7 @@ package net.enhancem.mixin;
 import net.enhancem.EnhanceM;
 import net.enhancem.entity.EnderSoldierEntity;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -123,7 +124,7 @@ public class EnderDragonHealthMixin {
 			if (!serverLevel.isInWorldBounds(candidate)) {
 				continue;
 			}
-			if (!serverLevel.getBlockState(ground).blocksMotion()) {
+			if (!serverLevel.getBlockState(ground).isFaceSturdy(serverLevel, ground, Direction.UP)) {
 				continue;
 			}
 			if (!serverLevel.getBlockState(candidate).isAir() || !serverLevel.getBlockState(candidate.above()).isAir()) {
