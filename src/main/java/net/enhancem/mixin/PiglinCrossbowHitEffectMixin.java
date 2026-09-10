@@ -45,10 +45,17 @@ public abstract class PiglinCrossbowHitEffectMixin {
             return;
         }
 
+        // 26.2: the old knockback(double,double,double) overload is gone; the 5-arg overload is a
+        // bridge to knockback(double,double,double,DamageSource,float,boolean). In that method the
+        // first double is the knockback strength (scaled by KNOCKBACK_RESISTANCE) and the two
+        // following doubles are the horizontal direction; the DamageSource/float/boolean params are
+        // never read, so passing the strength first preserves the pre-26.2 behaviour exactly.
         target.knockback(
             ENHANCEM_CROSSBOW_KNOCKBACK_STRENGTH,
             owner.getX() - target.getX(),
-            owner.getZ() - target.getZ()
+            owner.getZ() - target.getZ(),
+            arrow.damageSources().arrow(arrow, owner),
+            (float) ENHANCEM_CROSSBOW_KNOCKBACK_STRENGTH
         );
         target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, ENHANCEM_SLOWNESS_DURATION_TICKS, ENHANCEM_SLOWNESS_AMPLIFIER), owner);
     }
