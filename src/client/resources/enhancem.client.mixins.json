@@ -6,7 +6,8 @@
 		"EnhanceMClientMixin",
 		"ZombieRenderStateMixin",
 		"AbstractZombieRendererMixin",
-		"AbstractZombieModelMixin"
+		"AbstractZombieModelMixin",
+		"HumanoidModelSwordGripMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

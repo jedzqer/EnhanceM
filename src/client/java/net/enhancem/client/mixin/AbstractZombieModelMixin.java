@@ -8,7 +8,9 @@ import net.minecraft.client.model.monster.zombie.AbstractZombieModel;
 import net.minecraft.client.renderer.entity.state.ZombieRenderState;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -30,7 +32,12 @@ public abstract class AbstractZombieModelMixin {
 		@SuppressWarnings("unchecked")
 		HumanoidModel<ZombieRenderState> model = (HumanoidModel<ZombieRenderState>) (Object) this;
 
-		if (phase == SwordZombieAttackAnimation.PHASE_NONE) {
+		if (phase == SwordZombieAttackAnimation.PHASE_GUARDED_THRUST && this.enhancem$isUsingShield(renderState)) {
+			this.enhancem$applyGuardedThrust(model, renderState, swordState.enhancem$getSwordAttackProgress());
+			return;
+		}
+
+		if (phase == SwordZombieAttackAnimation.PHASE_NONE || phase == SwordZombieAttackAnimation.PHASE_GUARDED_THRUST) {
 			if (renderState.walkAnimationSpeed > 0.01F) {
 				model.rightArm.xRot = 0.0F;
 				model.rightArm.yRot = 0.0F;
@@ -69,6 +76,9 @@ public abstract class AbstractZombieModelMixin {
 				model.leftLeg.yRot = enhancem$rad(WALK_LL_REST[1]);
 				model.leftLeg.zRot = enhancem$rad(WALK_LL_REST[2]);
 			}
+			if (this.enhancem$isUsingShield(renderState)) {
+				this.enhancem$applyShieldGuard(model, renderState);
+			}
 			return;
 		}
 
@@ -82,6 +92,69 @@ public abstract class AbstractZombieModelMixin {
 		} else {
 			this.enhancem$applySecondPhase(model, progress);
 		}
+	}
+
+	@Unique
+	private boolean enhancem$isUsingShield(ZombieRenderState state) {
+		// UndeadRenderState.getUseItemStackForArm always returns the main-hand item.
+		return state.isUsingItem && state.useItemHand == InteractionHand.OFF_HAND
+			&& (state.mainArm == HumanoidArm.RIGHT ? state.leftHandItemStack : state.rightHandItemStack).is(Items.SHIELD);
+	}
+
+	@Unique
+	private void enhancem$applyShieldGuard(HumanoidModel<ZombieRenderState> model, ZombieRenderState state) {
+		float side = state.mainArm == HumanoidArm.RIGHT ? 1.0F : -1.0F;
+		ModelPart shieldArm = model.getArm(state.mainArm.getOpposite());
+		// shield_blocking is level at 90 degrees; rotating past it lowers the outer edge.
+		shieldArm.xRot = enhancem$rad(-45.0F);
+		shieldArm.yRot = side * enhancem$rad(25.0F);
+		shieldArm.zRot = side * enhancem$rad(120.0F);
+		// Move the guard toward the shield side and compensate for the grip rising with the roll.
+		shieldArm.x = shieldArm.getInitialPose().x() + side * 6.0F * state.ageScale;
+		shieldArm.y = shieldArm.getInitialPose().y() + 7.0F * state.ageScale;
+		shieldArm.z = shieldArm.getInitialPose().z() - 2.0F * state.ageScale;
+	}
+
+	@Unique
+	private void enhancem$applyGuardedThrust(HumanoidModel<ZombieRenderState> model, ZombieRenderState state, float progress) {
+		boolean rightHanded = state.mainArm == HumanoidArm.RIGHT;
+		float side = rightHanded ? 1.0F : -1.0F;
+		ModelPart swordArm = rightHanded ? model.rightArm : model.leftArm;
+		ModelPart frontLeg = rightHanded ? model.leftLeg : model.rightLeg;
+		ModelPart backLeg = rightHanded ? model.rightLeg : model.leftLeg;
+
+		// Coil briefly, thrust to full extension at the server's damage tick, then recover.
+		float extension;
+		if (progress < 0.2F) {
+			extension = 0.0F;
+		} else if (progress < (float)SwordZombieAttackAnimation.GUARDED_THRUST_DAMAGE_TICK / SwordZombieAttackAnimation.GUARDED_THRUST_DURATION_TICKS) {
+			float hitProgress = (float)SwordZombieAttackAnimation.GUARDED_THRUST_DAMAGE_TICK / SwordZombieAttackAnimation.GUARDED_THRUST_DURATION_TICKS;
+			extension = (progress - 0.2F) / (hitProgress - 0.2F);
+		} else if (progress < 0.55F) {
+			extension = 1.0F;
+		} else {
+			extension = 1.0F - (progress - 0.55F) / 0.45F;
+		}
+		extension = (float)Mth.smoothstep(Math.clamp(extension, 0.0F, 1.0F));
+		model.body.xRot = enhancem$rad(Mth.lerp(extension, 5.0F, 13.0F));
+		model.body.yRot = side * enhancem$rad(Mth.lerp(extension, -22.0F, -8.0F));
+		model.body.z = -extension * 1.5F * state.ageScale;
+
+		this.enhancem$applyShieldGuard(model, state);
+
+		// Reset vanilla swing offsets so thrust motion follows only the synced phase.
+		swordArm.x = swordArm.getInitialPose().x();
+		swordArm.y = swordArm.getInitialPose().y();
+		swordArm.xRot = enhancem$rad(Mth.lerp(extension, -65.0F, -90.0F));
+		swordArm.yRot = side * enhancem$rad(Mth.lerp(extension, -18.0F, 0.0F));
+		swordArm.zRot = side * enhancem$rad(Mth.lerp(extension, -8.0F, 0.0F));
+		swordArm.z = Mth.lerp(extension, 1.5F, -4.0F) * state.ageScale;
+		frontLeg.xRot = enhancem$rad(Mth.lerp(extension, -12.0F, -25.0F));
+		backLeg.xRot = enhancem$rad(Mth.lerp(extension, 10.0F, 18.0F));
+		frontLeg.yRot = 0.0F;
+		backLeg.yRot = 0.0F;
+		frontLeg.zRot = side * enhancem$rad(-4.0F);
+		backLeg.zRot = side * enhancem$rad(4.0F);
 	}
 
 	@Unique

@@ -5,6 +5,9 @@ public final class SwordZombieAttackAnimation {
 	public static final int PHASE_NONE = 0;
 	public static final int PHASE_FIRST = 1;
 	public static final int PHASE_SECOND = 2;
+	public static final int PHASE_GUARDED_THRUST = 3;
+	public static final int GUARDED_THRUST_DURATION_TICKS = 10;
+	public static final int GUARDED_THRUST_DAMAGE_TICK = 4;
 	public static final int FIRST_PHASE_DURATION_TICKS = 10;
 	public static final int SECOND_PHASE_DURATION_TICKS = 10;
 	public static final int FIRST_PHASE_DAMAGE_TICK = 7;
@@ -18,6 +21,7 @@ public final class SwordZombieAttackAnimation {
 		return switch (phase) {
 			case PHASE_FIRST -> FIRST_PHASE_DURATION_TICKS;
 			case PHASE_SECOND -> SECOND_PHASE_DURATION_TICKS;
+			case PHASE_GUARDED_THRUST -> GUARDED_THRUST_DURATION_TICKS;
 			default -> 0;
 		};
 	}
@@ -26,6 +30,7 @@ public final class SwordZombieAttackAnimation {
 		return switch (phase) {
 			case PHASE_FIRST -> FIRST_PHASE_DAMAGE_TICK;
 			case PHASE_SECOND -> SECOND_PHASE_DAMAGE_TICK;
+			case PHASE_GUARDED_THRUST -> GUARDED_THRUST_DAMAGE_TICK;
 			default -> 0;
 		};
 	}

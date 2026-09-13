@@ -45,12 +45,15 @@ public abstract class ZombieSwordStateMixin implements SwordZombieAccess {
 	@Override
 	public int enhancem$getSwordAttackPhase() {
 		Zombie zombie = (Zombie)(Object)this;
+		int phase = zombie.getEntityData().get(ENHANCEM_SWORD_ATTACK_PHASE);
+		boolean hasShield = zombie.getItemBySlot(EquipmentSlot.OFFHAND).is(Items.SHIELD);
 		if (!zombie.getMainHandItem().is(ItemTags.SWORDS)
-			|| zombie.getItemBySlot(EquipmentSlot.OFFHAND).is(Items.SHIELD)) {
+			|| (hasShield && phase != SwordZombieAttackAnimation.PHASE_GUARDED_THRUST)
+			|| (!hasShield && phase == SwordZombieAttackAnimation.PHASE_GUARDED_THRUST)) {
 			return SwordZombieAttackAnimation.PHASE_NONE;
 		}
 
-		return zombie.getEntityData().get(ENHANCEM_SWORD_ATTACK_PHASE);
+		return phase;
 	}
 
 	@Override
