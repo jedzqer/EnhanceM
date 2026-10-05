@@ -75,7 +75,7 @@ public abstract class DivineBlessingMixin {
             int reservedDurability = Math.max(1, (int) Math.ceil(maxDamage * 0.05D));
 
             if (remainingDurability <= reservedDurability) {
-                player.onEquippedItemBroken(blessedStack.getItem(), blessedSlot);
+                player.onEquippedItemBroken(blessedStack, blessedSlot);
                 player.setItemSlot(blessedSlot, ItemStack.EMPTY);
                 return false;
             }

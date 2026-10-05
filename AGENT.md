@@ -4,7 +4,7 @@ This file provides guidance to AI coding agents (Claude Code, Cursor, GitHub Cop
 
 ## Project Overview
 
-EnhanceM is a Minecraft Fabric mod (Java 25) that enhances mob behavior and difficulty. It targets Minecraft 26.2 and uses Fabric Loader 0.19.5 with Fabric API 0.160.0+26.2. Version numbers are in `gradle.properties`. Loom 1.17.20 requires Gradle 9.5.0, pinned in `gradle/wrapper/gradle-wrapper.properties`.
+EnhanceM is a Minecraft Fabric mod (Java 25) that enhances mob behavior and difficulty. It targets Minecraft 26.3 and uses Fabric Loader 0.19.5 with Fabric API 0.161.0+26.3. Version numbers are in `gradle.properties`. Loom 1.17.20 requires Gradle 9.5.0, pinned in `gradle/wrapper/gradle-wrapper.properties`.
 
 ## Build Commands
 

@@ -4,7 +4,7 @@ import net.enhancem.SwordZombieAttackAnimation;
 import net.enhancem.client.SwordZombieRenderStateAccess;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.monster.zombie.AbstractZombieModel;
+import net.minecraft.client.model.monster.zombie.ZombieModel;
 import net.minecraft.client.renderer.entity.state.ZombieRenderState;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.Mth;
@@ -17,10 +17,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(AbstractZombieModel.class)
+@Mixin(ZombieModel.class)
 public abstract class AbstractZombieModelMixin {
 
-	@Inject(method = "setupAnim(Lnet/minecraft/client/renderer/entity/state/ZombieRenderState;)V", at = @At("TAIL"))
+	@Inject(method = "setupAttackAnimation(Lnet/minecraft/client/renderer/entity/state/ZombieRenderState;)V", at = @At("TAIL"))
 	private void enhancem$applySwordComboPose(ZombieRenderState renderState, CallbackInfo ci) {
 		if (!renderState.getMainHandItemStack().is(ItemTags.SWORDS)) {
 			return;

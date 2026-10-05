@@ -32,6 +32,7 @@ import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import org.jspecify.annotations.Nullable;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 public class EnderSoldierEntity extends Zombie {
 
@@ -222,7 +223,7 @@ public class EnderSoldierEntity extends Zombie {
             if (newDistance <= oldDistance + 4.0D) {
                 continue;
             }
-            if (this.randomTeleport(x, y, z, true)) {
+            if (this.randomTeleport(x, y, z, true, state -> false)) {
                 this.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
                 return true;
             }
@@ -236,7 +237,7 @@ public class EnderSoldierEntity extends Zombie {
             double x = this.getX() + (this.getRandom().nextDouble() - 0.5D) * TELEPORT_HORIZONTAL_RANGE;
             double y = this.getY() + (this.getRandom().nextDouble() - 0.5D) * TELEPORT_VERTICAL_RANGE;
             double z = this.getZ() + (this.getRandom().nextDouble() - 0.5D) * TELEPORT_HORIZONTAL_RANGE;
-            if (this.randomTeleport(x, y, z, true)) {
+            if (this.randomTeleport(x, y, z, true, state -> false)) {
                 this.playSound(SoundEvents.ENDERMAN_TELEPORT, 1.0F, 1.0F);
                 return true;
             }

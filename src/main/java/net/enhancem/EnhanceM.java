@@ -36,7 +36,7 @@ import net.minecraft.world.level.storage.loot.LootPool;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.SetComponentsFunction;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
-import net.minecraft.world.level.storage.loot.providers.number.ConstantValue;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 import net.minecraft.world.phys.Vec3;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -159,7 +159,7 @@ public class EnhanceM implements ModInitializer {
 
 				tableBuilder.withPool(
 						LootPool.lootPool()
-								.setRolls(ConstantValue.exactly(1))
+								.setRolls(ContextIntProviders.exactly(1))
 								.add(LootItem.lootTableItem(Items.ENCHANTED_BOOK)
 										.apply(SetComponentsFunction.setComponent(
 												DataComponents.STORED_ENCHANTMENTS,
@@ -174,7 +174,7 @@ public class EnhanceM implements ModInitializer {
 
 			tableBuilder.withPool(
 					LootPool.lootPool()
-							.setRolls(ConstantValue.exactly(1))
+							.setRolls(ContextIntProviders.exactly(1))
 							.add(LootItem.lootTableItem(SPEED_BOOTS)
 									.when(LootItemRandomChanceCondition.randomChance(0.2f)))
 			);

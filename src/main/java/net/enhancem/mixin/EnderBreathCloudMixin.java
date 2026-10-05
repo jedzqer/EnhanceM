@@ -8,7 +8,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.AreaEffectCloud;
-import net.minecraft.world.entity.monster.EnderMan;
+import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
@@ -104,8 +104,8 @@ public class EnderBreathCloudMixin implements EnhancemEnderBreathMarker {
 	@Unique
 	private void enhancem$angerNearbyEndermen(ServerLevel level, Player player, Vec3 center) {
 		AABB aggroBounds = new AABB(center, center).inflate(ENHANCEM_ENDERMAN_AGGRO_RADIUS);
-		List<EnderMan> endermen = level.getEntitiesOfClass(EnderMan.class, aggroBounds, Entity::isAlive);
-		for (EnderMan enderMan : endermen) {
+		List<Enderman> endermen = level.getEntitiesOfClass(Enderman.class, aggroBounds, Entity::isAlive);
+		for (Enderman enderMan : endermen) {
 			enderMan.setTarget(player);
 		}
 	}

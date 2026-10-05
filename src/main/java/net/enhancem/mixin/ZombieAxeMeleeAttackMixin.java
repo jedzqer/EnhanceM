@@ -10,6 +10,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.MeleeAttackGoal;
 import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.component.SwingAnimation;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -76,7 +77,7 @@ public abstract class ZombieAxeMeleeAttackMixin {
 
 		if (attackTarget != null && this.canPerformAttack(attackTarget)) {
 			this.resetAttackCooldown();
-			zombie.swing(InteractionHand.MAIN_HAND);
+			zombie.swing(InteractionHand.MAIN_HAND, SwingAnimation.DEFAULT);
 			zombie.doHurtTarget((ServerLevel)zombie.level(), attackTarget);
 		}
 
