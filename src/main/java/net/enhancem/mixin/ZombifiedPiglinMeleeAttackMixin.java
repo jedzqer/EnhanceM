@@ -14,12 +14,10 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(MeleeAttackGoal.class)
-public abstract class ZombifiedPiglinMeleeAttackMixin {
+public abstract class ZombifiedPiglinMeleeAttackMixin implements net.enhancem.access.RetreatNavigationAccess {
 
 	@Unique
 	private static final int RETREAT_DURATION_TICKS = 12;
-	@Unique
-	private static final double APPROACH_SPEED = 1.1D;
 	@Unique
 	private static final double RETREAT_SPEED = 1.45D;
 	@Unique
@@ -36,15 +34,26 @@ public abstract class ZombifiedPiglinMeleeAttackMixin {
 
 	@Unique
 	private int enhancem$retreatTicks;
+	@Unique private long enhancem$nextRetreatPathTick;
+	@Unique private LivingEntity enhancem$retreatTarget;
+
+	@Override
+	public boolean enhancem$isPiglinRetreating() {
+		return this.enhancem$retreatTicks > 0;
+	}
 
 	@Inject(method = "start", at = @At("TAIL"))
 	private void enhancem$resetRetreatState(CallbackInfo ci) {
 		this.enhancem$retreatTicks = 0;
+		this.enhancem$nextRetreatPathTick = 0;
+		this.enhancem$retreatTarget = null;
 	}
 
 	@Inject(method = "stop", at = @At("TAIL"))
 	private void enhancem$clearRetreatState(CallbackInfo ci) {
 		this.enhancem$retreatTicks = 0;
+		this.enhancem$nextRetreatPathTick = 0;
+		this.enhancem$retreatTarget = null;
 	}
 
 	@Inject(method = "checkAndPerformAttack", at = @At("HEAD"))
@@ -54,7 +63,11 @@ public abstract class ZombifiedPiglinMeleeAttackMixin {
 		}
 
 		if (this.mob.isWithinMeleeAttackRange(target) && this.isTimeToAttack()) {
-			this.enhancem$retreatTicks = RETREAT_DURATION_TICKS;
+			if (this.enhancem$retreatTicks == 0) {
+                this.mob.getNavigation().stop();
+                this.enhancem$retreatTarget = null;
+            }
+            this.enhancem$retreatTicks = RETREAT_DURATION_TICKS;
 		}
 	}
 
@@ -83,7 +96,7 @@ public abstract class ZombifiedPiglinMeleeAttackMixin {
 			return;
 		}
 
-		piglin.getNavigation().moveTo(target, APPROACH_SPEED);
+		// Pursuit uses the vanilla navigation cooldown through MeleeChaseSpeedMixin.
 	}
 
 	@Unique
@@ -96,6 +109,13 @@ public abstract class ZombifiedPiglinMeleeAttackMixin {
 
 	@Unique
 	private void enhancem$moveAwayFromTarget(LivingEntity target) {
+		long now = this.mob.level().getGameTime();
+		if (target != this.enhancem$retreatTarget) {
+			this.enhancem$retreatTarget = target;
+			this.enhancem$nextRetreatPathTick = 0;
+		}
+		if (now < this.enhancem$nextRetreatPathTick) return;
+		this.enhancem$nextRetreatPathTick = now + 6 + Math.floorMod(this.mob.getId(), 3);
 		Vec3 retreatDirection = this.mob.position().subtract(target.position());
 		if (retreatDirection.lengthSqr() < MIN_RETREAT_DIRECTION_LENGTH_SQR) {
 			this.mob.getNavigation().stop();
@@ -105,6 +125,8 @@ public abstract class ZombifiedPiglinMeleeAttackMixin {
 		Vec3 normalizedDirection = retreatDirection.normalize().scale(RETREAT_DISTANCE);
 		double retreatX = this.mob.getX() + normalizedDirection.x;
 		double retreatZ = this.mob.getZ() + normalizedDirection.z;
-		this.mob.getNavigation().moveTo(retreatX, this.mob.getY(), retreatZ, RETREAT_SPEED);
+		if (!this.mob.getNavigation().moveTo(retreatX, this.mob.getY(), retreatZ, RETREAT_SPEED)) {
+			this.enhancem$nextRetreatPathTick = now + 20;
+		}
 	}
 }

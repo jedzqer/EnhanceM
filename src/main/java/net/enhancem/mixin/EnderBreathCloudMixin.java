@@ -6,7 +6,6 @@ import net.minecraft.core.particles.PowerParticleOption;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.AreaEffectCloud;
 import net.minecraft.world.entity.monster.Enderman;
 import net.minecraft.world.entity.player.Player;
@@ -58,6 +57,7 @@ public class EnderBreathCloudMixin implements EnhancemEnderBreathMarker {
 		Vec3 center = cloud.position();
 		AABB bounds = new AABB(center, center).inflate(radius);
 		List<Player> players = serverLevel.getEntitiesOfClass(Player.class, bounds, Player::isAlive);
+		List<Enderman> endermen = null;
 		for (Player player : players) {
 			if (player.position().distanceToSqr(center) > radius * radius) {
 				continue;
@@ -67,10 +67,18 @@ public class EnderBreathCloudMixin implements EnhancemEnderBreathMarker {
 			if (teleportPos != null) {
 				player.teleportTo(teleportPos.x, teleportPos.y, teleportPos.z);
 			}
-			this.enhancem$angerNearbyEndermen(serverLevel, player, center);
+			if (endermen == null) {
+				endermen = serverLevel.getEntitiesOfClass(Enderman.class,
+					new AABB(center, center).inflate(ENHANCEM_ENDERMAN_AGGRO_RADIUS), Entity::isAlive);
+			}
+			for (Enderman enderman : endermen) {
+				if (enderman.getTarget() != player) enderman.setTarget(player);
+			}
 		}
 
-		this.enhancem$spawnSphereParticles(serverLevel, center, radius);
+		if (Math.floorMod(serverLevel.getGameTime() + cloud.getId(), 5) == 0) {
+			this.enhancem$spawnSphereParticles(serverLevel, center, radius);
+		}
 	}
 
 	@Unique
@@ -80,14 +88,16 @@ public class EnderBreathCloudMixin implements EnhancemEnderBreathMarker {
 			double y = player.getY() + (player.getRandom().nextDouble() - 0.5D) * ENHANCEM_VERTICAL_RANDOM_RANGE;
 			double z = player.getZ() + (player.getRandom().nextDouble() - 0.5D) * 32.0D;
 			BlockPos pos = BlockPos.containing(x, y, z);
-			if (!level.isInWorldBounds(pos)) {
+			if (!level.isInWorldBounds(pos) || !level.hasChunkAt(pos)) {
 				continue;
 			}
 
-			BlockPos groundPos = pos;
-			while (groundPos.getY() > level.getMinY() && level.getBlockState(groundPos).isAir()) {
-				groundPos = groundPos.below();
+			BlockPos.MutableBlockPos groundPos = pos.mutable();
+			int bottom = Math.max(level.getMinY(), pos.getY() - 32);
+			while (groundPos.getY() > bottom && level.getBlockState(groundPos).isAir()) {
+				groundPos.setY(groundPos.getY() - 1);
 			}
+			if (level.getBlockState(groundPos).isAir()) continue;
 
 			BlockPos standPos = groundPos.above();
 			BlockState feetState = level.getBlockState(standPos);
@@ -99,15 +109,6 @@ public class EnderBreathCloudMixin implements EnhancemEnderBreathMarker {
 			return Vec3.atBottomCenterOf(standPos);
 		}
 		return null;
-	}
-
-	@Unique
-	private void enhancem$angerNearbyEndermen(ServerLevel level, Player player, Vec3 center) {
-		AABB aggroBounds = new AABB(center, center).inflate(ENHANCEM_ENDERMAN_AGGRO_RADIUS);
-		List<Enderman> endermen = level.getEntitiesOfClass(Enderman.class, aggroBounds, Entity::isAlive);
-		for (Enderman enderMan : endermen) {
-			enderMan.setTarget(player);
-		}
 	}
 
 	@Unique

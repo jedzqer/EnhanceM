@@ -26,6 +26,10 @@ public class DrownedLandSlownessMixin {
 		}
 
 		if (drowned.onGround() && !drowned.isInWater()) {
+			// Preserve potion stacking and the short off-land tail without refreshing every tick.
+			MobEffectInstance current = drowned.getEffect(MobEffects.SLOWNESS);
+			if (current != null && current.getAmplifier() >= ENHANCEM_DROWNED_LAND_SLOWNESS_AMPLIFIER
+					&& !current.endsWithin(2)) return;
 			drowned.addEffect(new MobEffectInstance(
 				MobEffects.SLOWNESS,
 				ENHANCEM_DROWNED_LAND_SLOWNESS_DURATION,

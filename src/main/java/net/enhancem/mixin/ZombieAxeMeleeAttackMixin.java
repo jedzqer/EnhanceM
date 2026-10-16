@@ -63,6 +63,17 @@ public abstract class ZombieAxeMeleeAttackMixin {
 
 	@Unique
 	private int enhancem$jumpCooldownTicks;
+    @Unique private long enhancem$nextRetreatPathTick;
+    @Unique private long enhancem$nextTargetScanTick;
+    @Unique private LivingEntity enhancem$retreatTarget;
+
+    @Inject(method = {"start", "stop"}, at = @At("TAIL"))
+    private void enhancem$resetAxeNavigation(CallbackInfo ci) {
+        this.enhancem$nextRetreatPathTick = 0;
+        this.enhancem$nextTargetScanTick = 0;
+        this.enhancem$retreatTarget = null;
+        this.enhancem$jumpCooldownTicks = 0;
+    }
 
 	@Inject(method = "checkAndPerformAttack", at = @At("HEAD"), cancellable = true)
 	private void enhancem$attackNearestPlayer(LivingEntity target, CallbackInfo ci) {
@@ -71,7 +82,7 @@ public abstract class ZombieAxeMeleeAttackMixin {
 		}
 
 		LivingEntity attackTarget = this.enhancem$selectNearestPlayerTarget(zombie, target);
-		if (attackTarget != null) {
+		if (attackTarget != null && attackTarget != zombie.getTarget()) {
 			zombie.setTarget(attackTarget);
 		}
 
@@ -93,10 +104,16 @@ public abstract class ZombieAxeMeleeAttackMixin {
 		LivingEntity target = zombie.getTarget();
 		if (!this.enhancem$shouldRetreatFromPlayer(target)) {
 			this.enhancem$jumpCooldownTicks = 0;
+			this.enhancem$retreatTarget = null;
 			return;
 		}
 
-		if (this.enhancem$jumpCooldownTicks > 0) {
+        if (target != this.enhancem$retreatTarget) {
+            this.enhancem$retreatTarget = target;
+            this.enhancem$nextRetreatPathTick = 0;
+            zombie.getNavigation().stop();
+        }
+        if (this.enhancem$jumpCooldownTicks > 0) {
 			this.enhancem$jumpCooldownTicks--;
 			return;
 		}
@@ -111,10 +128,15 @@ public abstract class ZombieAxeMeleeAttackMixin {
 			return;
 		}
 
-		Vec3 retreatDirection = this.enhancem$getRetreatDirection(target);
+        long now = zombie.level().getGameTime();
+        if (now < this.enhancem$nextRetreatPathTick) return;
+        this.enhancem$nextRetreatPathTick = now + 6 + Math.floorMod(zombie.getId(), 3);
+        Vec3 retreatDirection = this.enhancem$getRetreatDirection(target);
 		double retreatX = zombie.getX() + retreatDirection.x * AXE_ZOMBIE_RETREAT_DISTANCE;
 		double retreatZ = zombie.getZ() + retreatDirection.z * AXE_ZOMBIE_RETREAT_DISTANCE;
-		zombie.getNavigation().moveTo(retreatX, zombie.getY(), retreatZ, AXE_ZOMBIE_RETREAT_SPEED);
+		if (!zombie.getNavigation().moveTo(retreatX, zombie.getY(), retreatZ, AXE_ZOMBIE_RETREAT_SPEED)) {
+            this.enhancem$nextRetreatPathTick = now + 20;
+        }
 	}
 
 	@Unique
@@ -124,11 +146,18 @@ public abstract class ZombieAxeMeleeAttackMixin {
 
 	@Unique
 	private LivingEntity enhancem$selectNearestPlayerTarget(Zombie zombie, LivingEntity fallbackTarget) {
-		Player nearestPlayer = zombie.level().getNearestPlayer(zombie, zombie.getAttributeValue(Attributes.FOLLOW_RANGE));
+		long now = zombie.level().getGameTime();
+        boolean validFallback = fallbackTarget != null && fallbackTarget.isAlive()
+            && (!(fallbackTarget instanceof Player player) || !player.isCreative() && !player.isSpectator());
+        if (now < this.enhancem$nextTargetScanTick) return validFallback ? fallbackTarget : null;
+        this.enhancem$nextTargetScanTick = now + 10 + Math.floorMod(zombie.getId(), 5);
+        Player nearestPlayer = zombie.level().getNearestPlayer(zombie.getX(), zombie.getY(), zombie.getZ(),
+            zombie.getAttributeValue(Attributes.FOLLOW_RANGE),
+            entity -> entity instanceof Player player && player.isAlive() && !player.isCreative() && !player.isSpectator());
 		if (nearestPlayer != null && nearestPlayer.isAlive()) {
 			return nearestPlayer;
 		}
-		return fallbackTarget;
+		return validFallback ? fallbackTarget : null;
 	}
 
 	@Unique

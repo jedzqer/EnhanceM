@@ -105,6 +105,7 @@ public class EnhanceM implements ModInitializer {
 
 	private void registerRebirthPearlTick() {
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
+			if (RebirthPearl.CHANNELING.isEmpty()) return;
 			var toRemove = new ArrayList<UUID>();
 
 			RebirthPearl.CHANNELING.forEach((uuid, startTick) -> {
