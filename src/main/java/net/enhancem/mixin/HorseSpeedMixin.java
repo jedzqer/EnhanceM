@@ -14,10 +14,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class HorseSpeedMixin {
 
 	@Unique
-	private static final double ENHANCEM_HORSE_SPEED_MULTIPLIER = 2.0D;
+	private static final double ENHANCEM_HORSE_SPEED_MULTIPLIER = 1.2D;
 
 	@Inject(method = "randomizeAttributes", at = @At("TAIL"))
-	private void enhancem$doubleHorseSpeed(RandomSource random, CallbackInfo ci) {
+	private void enhancem$increaseHorseSpeed(RandomSource random, CallbackInfo ci) {
 		Horse horse = (Horse) (Object) this;
 		AttributeInstance speedAttr = horse.getAttribute(Attributes.MOVEMENT_SPEED);
 		if (speedAttr != null) {

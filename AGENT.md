@@ -45,7 +45,7 @@ The mod uses **Fabric's split source sets** (`splitEnvironmentSourceSets()` in `
 ### Items & Enchantments
 - **Divine Blessing**: `DivineBlessingMixin` injects into `LivingEntity.checkTotemDeathProtection` — acts as a second-chance totem. On activation, consumes armor durability down to 5%, grants regen/absorption/fire resistance, and plays a custom sound. Enchanted books found in bastion/nether fortress loot (15% chance).
 - **Rebirth Pearl**: `RebirthPearl` item starts a 5-second channel (tracked via `CHANNELING` map). `RebirthPearlDamageMixin` cancels the channel on any damage. Server tick handler in `EnhanceM` teleports player to world spawn on completion. Client receives `RebirthPearlChannelPayload` packets for particle effects.
-- **Speed Boots**: `SpeedBootsPlayerMixin` injects into `Player.travel` and `Player.tick` — adds a transient 1.7× land-sprint speed modifier when worn, with double hunger exhaustion.
+- **Speed Boots**: `SpeedBootsPlayerMixin` injects into `Player.travel` and `Player.tick` — adds a transient 1.6× land-sprint speed modifier when worn, with double hunger exhaustion.
 
 ### Ender Dragon & Ender Soldiers
 - **EnderDragonHealthMixin**: 3× max health, summons Ender Soldiers at 20% HP thresholds (up to 5 thresholds, max 4 soldiers per wave). Soldiers are spawned on valid ground positions in a ring around the dragon.
@@ -65,7 +65,7 @@ The mod uses **Fabric's split source sets** (`splitEnvironmentSourceSets()` in `
 - **Spider** (`SpiderWebMixin`): 50% cobweb spawn on hit.
 - **Creeper** (`CreeperSpeedMixin`): 50% double-speed variant; slow variant applies blindness/nausea/slowness II on explosion.
 - **Drowned** (`DrownedSpeedMixin`, `DrownedHitEffectMixin`, `DrownedLandSlownessMixin`): Faster swimming, -5 oxygen on hit, slower on land.
-- **Horse** (`HorseSpeedMixin`): 2× speed.
+- **Horse** (`HorseSpeedMixin`): 1.2× speed.
 - **Piglin** (`PiglinWeaponEnchantMixin`, `PiglinCrossbowHitEffectMixin`, `PiglinBruteHitEffectMixin`): Enchanted weapons, crossbow knockback + slowness, brute hit slowness + forced crouch.
 - **Zombified Piglin** (`ZombifiedPiglinWeaponEnchantMixin`, `ZombifiedPiglinMeleeAttackMixin`): Enchanted weapons, hit-and-run melee AI.
 

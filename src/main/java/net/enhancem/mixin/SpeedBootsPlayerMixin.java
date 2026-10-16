@@ -24,7 +24,7 @@ public abstract class SpeedBootsPlayerMixin {
 			"speed_boots_land_sprint"
 	);
 	@Unique
-	private static final double ENHANCEM_SPEED_BOOTS_SPEED_BONUS = 0.7D;
+	private static final double ENHANCEM_SPEED_BOOTS_SPEED_BONUS = 0.6D;
 	@Unique
 	private static final float ENHANCEM_SPEED_BOOTS_EXTRA_EXHAUSTION_PER_BLOCK = 0.1F;
 
