@@ -43,8 +43,11 @@ public class ZombieToolMixin {
     @Inject(method = "<init>(Lnet/minecraft/world/entity/EntityType;Lnet/minecraft/world/level/Level;)V", at = @At("TAIL"))
     private void enhancem$addRandomTool(CallbackInfo ci) {
         Zombie zombie = (Zombie) (Object) this;
-        ItemStack tool = getRandomTool(zombie);
-        zombie.setItemSlot(EquipmentSlot.MAINHAND, tool);
+        int roll = RANDOM.nextInt(100);
+        // Leave the remaining 10% unequipped for vanilla spawn equipment rolls.
+        if (roll < 90) {
+            zombie.setItemSlot(EquipmentSlot.MAINHAND, getRandomTool(zombie));
+        }
     }
 
     @Unique
@@ -162,11 +165,12 @@ public class ZombieToolMixin {
 
     @Unique
     private ItemStack enchantSpear(Zombie zombie, ItemStack spear) {
-        if (RANDOM.nextInt(100) < 25) {
+        int roll = RANDOM.nextInt(100);
+        if (roll < 30) {
             Holder.Reference<Enchantment> enchantment = zombie.level().registryAccess()
                 .lookupOrThrow(Registries.ENCHANTMENT)
                 .getOrThrow(Enchantments.KNOCKBACK);
-            spear.enchant(enchantment, 2);
+            spear.enchant(enchantment, roll < 25 ? 1 : 2);
         }
         return spear;
     }
