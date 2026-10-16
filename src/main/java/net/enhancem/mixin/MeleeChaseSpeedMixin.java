@@ -2,12 +2,9 @@ package net.enhancem.mixin;
 
 import net.enhancem.ChaseSpeedAccess;
 import net.enhancem.access.RetreatNavigationAccess;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.monster.zombie.Zombie;
 import net.minecraft.world.entity.monster.zombie.ZombifiedPiglin;
-import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -24,7 +21,6 @@ public abstract class MeleeChaseSpeedMixin {
     @Shadow @Final protected PathfinderMob mob;
     @Shadow @Final private double speedModifier;
 
-    @Shadow private int ticksUntilNextAttack;
     @Shadow private int ticksUntilNextPathRecalculation;
     @Shadow private double pathedTargetX;
     @Shadow private double pathedTargetY;
@@ -35,9 +31,7 @@ public abstract class MeleeChaseSpeedMixin {
     private void enhancem$updateNavigationOwner(CallbackInfo ci) {
         var target = this.mob.getTarget();
         boolean retreating = target != null && target.isAlive()
-            && (((RetreatNavigationAccess) this).enhancem$isPiglinRetreating()
-                || this.mob instanceof Zombie && this.mob.getMainHandItem().is(ItemTags.AXES)
-                    && target instanceof Player && this.ticksUntilNextAttack > 1);
+            && ((RetreatNavigationAccess) this).enhancem$isPiglinRetreating();
         if (!retreating && this.enhancem$wasRetreating) {
             this.mob.getNavigation().stop();
             this.ticksUntilNextPathRecalculation = 0;

@@ -57,7 +57,7 @@ The mod uses **Fabric's split source sets** (`splitEnvironmentSourceSets()` in `
 ### Zombie Variants
 - **Tool generation** (`ZombieToolMixin`): Random tool on spawn — 25% copper, 25% iron, 30% gold, 15% diamond, 5% netherite. Swords have 25% chance of Fire Aspect II or Sharpness III.
 - **Sword Zombie** (`ZombieSwordStateMixin`, `ZombieSwordMeleeAttackMixin`): Dual-phase combo attack animation (20 ticks total: 10+10). Client side: `ZombieRenderStateMixin`, `AbstractZombieRendererMixin`, `AbstractZombieModelMixin` handle the visual animation. Access interfaces: `SwordZombieAccess`, `SwordZombieRenderStateAccess`. Constants in `SwordZombieAttackAnimation`.
-- **Axe Zombie** (`ZombieAxeMeleeAttackMixin`): Axe-wielding zombies strafe and jump away during cooldown.
+- **Axe Zombie** (`ZombieAxeMeleeAttackMixin`): Axe-wielding zombies prioritize nearby players for melee attacks; no custom cooldown retreat or dodge jumps.
 - **Shield Zombie** (`ZombieShieldMixin`, `ZombieShieldAttackGoalMixin`, `ZombieShieldMeleeAttackMixin`): Shield-wielding zombies with custom attack AI.
 
 ### Other Mobs
