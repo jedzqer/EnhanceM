@@ -1,5 +1,6 @@
 package net.enhancem.mixin;
 
+import net.enhancem.ChaseSpeedAccess;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -17,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Creeper.class)
-public class CreeperSpeedMixin {
+public class CreeperSpeedMixin implements ChaseSpeedAccess {
 
 	@Unique
 	private static final String ENHANCEM_NORMAL_CREEPER_TAG = "EnhanceMNormalSpeedCreeper";
@@ -26,7 +27,7 @@ public class CreeperSpeedMixin {
 	@Unique
 	private static final double ENHANCEM_NORMAL_CREEPER_SPEED = 0.25D;
 	@Unique
-	private static final double ENHANCEM_FAST_CREEPER_SPEED = ENHANCEM_NORMAL_CREEPER_SPEED * 2.0D;
+	private static final double ENHANCEM_FAST_CREEPER_CHASE_MULTIPLIER = VINDICATOR_CHASE_SPEED / ENHANCEM_NORMAL_CREEPER_SPEED;
 	@Unique
 	private static final int ENHANCEM_DEBUFF_DURATION_TICKS = 100;
 	@Unique
@@ -92,7 +93,11 @@ public class CreeperSpeedMixin {
 	private void enhancem$applyMovementSpeed(Creeper creeper) {
 		AttributeInstance speedAttr = creeper.getAttribute(Attributes.MOVEMENT_SPEED);
 		if (speedAttr != null) {
-			speedAttr.setBaseValue(this.enhancem$normalSpeedCreeper ? ENHANCEM_NORMAL_CREEPER_SPEED : ENHANCEM_FAST_CREEPER_SPEED);
+			speedAttr.setBaseValue(ENHANCEM_NORMAL_CREEPER_SPEED);
 		}
 	}
+    @Override
+    public double enhancem$getChaseSpeedMultiplier() {
+        return this.enhancem$normalSpeedCreeper ? 1.0D : ENHANCEM_FAST_CREEPER_CHASE_MULTIPLIER;
+    }
 }

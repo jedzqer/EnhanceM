@@ -5,6 +5,8 @@
 	"mixins": [
 		"DivineBlessingMixin",
 		"CreeperSpeedMixin",
+		"MeleeChaseSpeedMixin",
+		"SpearChaseSpeedMixin",
 		"DrownedLandSlownessMixin",
 		"DrownedHitEffectMixin",
 		"DrownedSpeedMixin",

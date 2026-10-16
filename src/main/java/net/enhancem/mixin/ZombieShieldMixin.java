@@ -1,6 +1,7 @@
 package net.enhancem.mixin;
 
 import net.enhancem.ShieldZombieAccess;
+import net.minecraft.world.entity.EntityTypes;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -69,7 +70,12 @@ public class ZombieShieldMixin implements ShieldZombieAccess {
     private void enhancem$applyMovementSpeed(Zombie zombie) {
         AttributeInstance speedAttr = zombie.getAttribute(Attributes.MOVEMENT_SPEED);
         if (speedAttr != null) {
-            speedAttr.setBaseValue(this.enhancem$shieldZombie ? SHIELD_ZOMBIE_SPEED : ENHANCED_ZOMBIE_SPEED);
+            // Also migrates the old permanent 0.35 speed when loading existing zombies.
+            boolean ordinaryZombie = zombie.getType() == EntityTypes.ZOMBIE
+                || zombie.getType() == EntityTypes.HUSK
+                || zombie.getType() == EntityTypes.ZOMBIE_VILLAGER;
+            speedAttr.setBaseValue(this.enhancem$shieldZombie || ordinaryZombie
+                ? SHIELD_ZOMBIE_SPEED : ENHANCED_ZOMBIE_SPEED);
         }
     }
 
