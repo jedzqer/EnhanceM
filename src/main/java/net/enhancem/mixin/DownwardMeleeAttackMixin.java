@@ -13,13 +13,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class DownwardMeleeAttackMixin {
 
 	@Unique
-	private static final double EXTRA_DOWNWARD_ATTACK_DEPTH = 0.5D;
+	private static final double EXTRA_MELEE_ATTACK_REACH = 0.5D;
 
 	@Inject(method = "getAttackBoundingBox", at = @At("RETURN"), cancellable = true)
-	private void enhancem$extendDownwardAttackBox(double horizontalExpansion, CallbackInfoReturnable<AABB> cir) {
+	private void enhancem$extendMeleeAttackBox(double horizontalExpansion, CallbackInfoReturnable<AABB> cir) {
 		if ((Object)this instanceof Monster) {
-			// Keep vanilla reach and mounted bounds; only lower the bottom face.
-			cir.setReturnValue(cir.getReturnValue().expandTowards(0.0D, -EXTRA_DOWNWARD_ATTACK_DEPTH, 0.0D));
+			// Expand every face of the vanilla attack box, including mounted bounds.
+			cir.setReturnValue(cir.getReturnValue().inflate(EXTRA_MELEE_ATTACK_REACH));
 		}
 	}
 }
