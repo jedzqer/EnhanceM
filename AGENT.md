@@ -43,7 +43,7 @@ The mod uses **Fabric's split source sets** (`splitEnvironmentSourceSets()` in `
 ## Key Features & Their Mixins
 
 ### Items & Enchantments
-- **Divine Blessing**: `DivineBlessingMixin` injects into `LivingEntity.checkTotemDeathProtection` — acts as a second-chance totem. On activation, consumes armor durability down to 5%, grants regen/absorption/fire resistance, and plays a custom sound. Enchanted books found in bastion/nether fortress loot (15% chance).
+- **Divine Blessing**: `DivineBlessingMixin` injects into `LivingEntity.checkTotemDeathProtection` — acts as a second-chance totem. On activation, consumes armor durability down to 5%, grants regen/absorption/fire resistance, and plays a custom sound. Enchanted books and Speed Boots each have a 50% chance in bastion treasure chests and a 10% chance in the other three bastion chest types and nether fortress chests.
 - **Rebirth Pearl**: `RebirthPearl` item starts a 5-second channel (tracked via `CHANNELING` map). `RebirthPearlDamageMixin` cancels the channel on any damage. Server tick handler in `EnhanceM` teleports player to world spawn on completion. Client receives `RebirthPearlChannelPayload` packets for particle effects.
 - **Speed Boots**: `SpeedBootsPlayerMixin` injects into `Player.travel` and `Player.tick` — adds a transient 1.6× land-sprint speed modifier when worn, with double hunger exhaustion.
 

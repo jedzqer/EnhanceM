@@ -153,6 +153,7 @@ public class EnhanceM implements ModInitializer {
 
 		LootTableEvents.MODIFY.register((key, tableBuilder, source, registries) -> {
 			if (bastionTables.stream().noneMatch(k -> k.equals(key))) return;
+			float chance = BuiltInLootTables.BASTION_TREASURE.equals(key) ? 0.5f : 0.1f;
 
 			registries.lookupOrThrow(Registries.ENCHANTMENT).get(DIVINE_BLESSING_KEY).ifPresent(enchantmentHolder -> {
 				var mutable = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
@@ -165,19 +166,15 @@ public class EnhanceM implements ModInitializer {
 										.apply(SetComponentsFunction.setComponent(
 												DataComponents.STORED_ENCHANTMENTS,
 												mutable.toImmutable()))
-										.when(LootItemRandomChanceCondition.randomChance(0.15f)))
+										.when(LootItemRandomChanceCondition.randomChance(chance)))
 				);
 			});
-		});
-
-		LootTableEvents.MODIFY.register((key, tableBuilder, source, registries) -> {
-			if (!BuiltInLootTables.NETHER_BRIDGE.equals(key)) return;
 
 			tableBuilder.withPool(
 					LootPool.lootPool()
 							.setRolls(ContextIntProviders.exactly(1))
 							.add(LootItem.lootTableItem(SPEED_BOOTS)
-									.when(LootItemRandomChanceCondition.randomChance(0.2f)))
+									.when(LootItemRandomChanceCondition.randomChance(chance)))
 			);
 		});
 	}
