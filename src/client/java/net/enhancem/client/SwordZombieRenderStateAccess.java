@@ -9,4 +9,8 @@ public interface SwordZombieRenderStateAccess {
 	float enhancem$getSwordAttackProgress();
 
 	void enhancem$setSwordAttackProgress(float progress);
+
+	boolean enhancem$isShieldBlocking();
+
+	void enhancem$setShieldBlocking(boolean blocking);
 }

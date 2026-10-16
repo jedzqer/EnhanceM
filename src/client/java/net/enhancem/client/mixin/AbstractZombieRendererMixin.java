@@ -17,6 +17,8 @@ public abstract class AbstractZombieRendererMixin {
 	private void enhancem$extractSwordAttackState(Zombie zombie, ZombieRenderState renderState, float partialTick, CallbackInfo ci) {
 		SwordZombieAccess swordZombie = (SwordZombieAccess)zombie;
 		SwordZombieRenderStateAccess swordRenderState = (SwordZombieRenderStateAccess)renderState;
+		// Use vanilla's actual activation check, including the item's configured delay.
+		swordRenderState.enhancem$setShieldBlocking(zombie.isBlocking());
 		swordRenderState.enhancem$setSwordAttackPhase(swordZombie.enhancem$getSwordAttackPhase());
 		swordRenderState.enhancem$setSwordAttackProgress(swordZombie.enhancem$getSwordAttackAnimationProgress(partialTick));
 	}

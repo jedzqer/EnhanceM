@@ -32,7 +32,7 @@ public abstract class AbstractZombieModelMixin {
 		@SuppressWarnings("unchecked")
 		HumanoidModel<ZombieRenderState> model = (HumanoidModel<ZombieRenderState>) (Object) this;
 
-		if (phase == SwordZombieAttackAnimation.PHASE_GUARDED_THRUST && this.enhancem$isUsingShield(renderState)) {
+		if (phase == SwordZombieAttackAnimation.PHASE_GUARDED_THRUST && this.enhancem$isBlockingWithShield(renderState)) {
 			this.enhancem$applyGuardedThrust(model, renderState, swordState.enhancem$getSwordAttackProgress());
 			return;
 		}
@@ -76,7 +76,7 @@ public abstract class AbstractZombieModelMixin {
 				model.leftLeg.yRot = enhancem$rad(WALK_LL_REST[1]);
 				model.leftLeg.zRot = enhancem$rad(WALK_LL_REST[2]);
 			}
-			if (this.enhancem$isUsingShield(renderState)) {
+			if (this.enhancem$isBlockingWithShield(renderState)) {
 				this.enhancem$applyShieldGuard(model, renderState);
 			}
 			return;
@@ -95,9 +95,11 @@ public abstract class AbstractZombieModelMixin {
 	}
 
 	@Unique
-	private boolean enhancem$isUsingShield(ZombieRenderState state) {
+	private boolean enhancem$isBlockingWithShield(ZombieRenderState state) {
 		// UndeadRenderState.getUseItemStackForArm always returns the main-hand item.
-		return state.isUsingItem && state.useItemHand == InteractionHand.OFF_HAND
+		// Keep the lowered pose during vanilla's shield activation delay.
+		return ((SwordZombieRenderStateAccess) state).enhancem$isShieldBlocking()
+			&& state.isUsingItem && state.useItemHand == InteractionHand.OFF_HAND
 			&& (state.mainArm == HumanoidArm.RIGHT ? state.leftHandItemStack : state.rightHandItemStack).is(Items.SHIELD);
 	}
 

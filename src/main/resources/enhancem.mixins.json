@@ -28,6 +28,7 @@
 		"ZombifiedPiglinMeleeAttackMixin",
 		"ZombifiedPiglinWeaponEnchantMixin",
 		"ZombieShieldAttackGoalMixin",
+		"ZombieShieldDisableMixin",
 		"ZombieAxeMeleeAttackMixin",
 		"ZombieShieldMeleeAttackMixin",
 		"ZombieShieldMixin",

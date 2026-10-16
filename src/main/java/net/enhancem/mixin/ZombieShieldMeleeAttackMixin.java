@@ -70,6 +70,7 @@ public abstract class ZombieShieldMeleeAttackMixin {
 
 		LivingEntity target = zombie.getTarget();
 		boolean shouldBlock = target != null
+			&& !((ShieldZombieAccess) zombie).enhancem$isShieldDisabled()
 			&& target.isAlive()
 			&& zombie.getOffhandItem().is(net.minecraft.world.item.Items.SHIELD)
 			&& zombie.getSensing().hasLineOfSight(target)
@@ -98,6 +99,7 @@ public abstract class ZombieShieldMeleeAttackMixin {
 		}
 
 		boolean swordAndShield = zombie.getMainHandItem().is(ItemTags.SWORDS)
+			&& !((ShieldZombieAccess) zombie).enhancem$isShieldDisabled()
 			&& zombie.getOffhandItem().is(net.minecraft.world.item.Items.SHIELD);
 		if (this.enhancem$guardedAttackActive) {
 			if (!swordAndShield || !target.isAlive() || !zombie.isUsingItem()

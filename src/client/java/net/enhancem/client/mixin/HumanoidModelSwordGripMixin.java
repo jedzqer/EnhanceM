@@ -20,6 +20,7 @@ public abstract class HumanoidModelSwordGripMixin {
 	@Inject(method = "translateToHand", at = @At("TAIL"))
 	private void enhancem$pointSwordForward(HumanoidRenderState state, HumanoidArm arm, PoseStack poseStack, CallbackInfo ci) {
 		if (state instanceof SwordZombieRenderStateAccess swordState
+			&& swordState.enhancem$isShieldBlocking()
 			&& swordState.enhancem$getSwordAttackPhase() == SwordZombieAttackAnimation.PHASE_GUARDED_THRUST
 			&& arm == state.mainArm && state.getMainHandItemStack().is(ItemTags.SWORDS)
 			&& state.isUsingItem && state.useItemHand == InteractionHand.OFF_HAND

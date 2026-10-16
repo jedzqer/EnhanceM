@@ -35,6 +35,19 @@ public class ZombieShieldMixin implements ShieldZombieAccess {
 
     @Unique
     private boolean enhancem$shieldZombie;
+    @Unique
+    private long enhancem$shieldDisabledUntil;
+
+    @Override
+    public boolean enhancem$isShieldDisabled() {
+        return ((Zombie) (Object) this).level().getGameTime() < this.enhancem$shieldDisabledUntil;
+    }
+
+    @Override
+    public void enhancem$disableShield(int ticks) {
+        Zombie zombie = (Zombie) (Object) this;
+        this.enhancem$shieldDisabledUntil = zombie.level().getGameTime() + ticks;
+    }
 
     @Inject(method = "finalizeSpawn", at = @At("TAIL"))
     private void enhancem$equipShieldOnSpawn(
